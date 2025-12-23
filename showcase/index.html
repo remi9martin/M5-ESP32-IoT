@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>M5Stack Arsenal - Your Tinkerer's Paradise</title>
+  <meta name="description" content="Explore 9 powerful M5Stack devices with 20+ project ideas from hacking tools to autonomous robots.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="bg-grid"></div>
+  
+  <!-- Navigation -->
+  <nav>
+    <div class="nav-logo">M5 Arsenal</div>
+    <ul class="nav-links">
+      <li><a href="#devices">Devices</a></li>
+      <li><a href="#combined">Combos</a></li>
+      <li><a href="#build">Build Now</a></li>
+    </ul>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-content">
+      <span class="hero-badge">🔧 Tinkerer's Collection</span>
+      <h1>Your M5Stack Arsenal</h1>
+      <p class="hero-subtitle">
+        9 powerful devices. Infinite possibilities. From WiFi hacking to thermal-hunting robots to autonomous drones.
+      </p>
+      <div class="hero-stats">
+        <div class="stat">
+          <div class="stat-number">9</div>
+          <div class="stat-label">Devices</div>
+        </div>
+        <div class="stat">
+          <div class="stat-number">20+</div>
+          <div class="stat-label">Projects</div>
+        </div>
+        <div class="stat">
+          <div class="stat-number">$499</div>
+          <div class="stat-label">Total Value</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Devices Section -->
+  <section id="devices">
+    <div class="section-header">
+      <h2>Your Hardware Fleet</h2>
+      <p>Each device unlocks unique capabilities. Click to explore what you can build.</p>
+    </div>
+
+    <div class="devices-grid">
+      
+      <!-- Cardputer -->
+      <div class="device-card fade-in" style="--card-accent: linear-gradient(90deg, #ff00aa, #aa44ff)">
+        <span class="device-icon">🖥️</span>
+        <h3 class="device-name">Cardputer</h3>
+        <div class="device-price">$29.90</div>
+        <div class="device-specs">
+          <span class="spec-tag">ESP32-S3</span>
+          <span class="spec-tag">QWERTY</span>
+          <span class="spec-tag">1.14" TFT</span>
+          <span class="spec-tag">WiFi/BLE</span>
+        </div>
+        <p class="device-description">
+          The hacker's Swiss Army knife. Full keyboard, powerful ESP32-S3, fits in your pocket. Perfect for on-the-go pentesting.
+        </p>
+        <div class="project-ideas">
+          <h4>🎯 Project Ideas</h4>
+          <ul class="idea-list">
+            <li class="idea-item">
+              <span class="idea-icon">📡</span>
+              <div class="idea-content">
+                <h5>WiFi Deauther <span class="difficulty easy">Easy</span></h5>
+                <p>Flash Bruce firmware → instant network scanner & deauth tool</p>
+              </div>
+            </li>
+            <li class="idea-item">
+              <span class="idea-icon">💀</span>
+              <div class="idea-content">
+                <h5>BadUSB Attack Platform <span class="difficulty medium">Medium</span></h5>
+                <p>Emulate keyboard, inject payloads, exfiltrate data via USB</p>
+              </div>
+            </li>
+            <li class="idea-item">
+              <span class="idea-icon">👻</span>
+              <div class="idea-content">
+                <h5>Probe Request Sniffer <span class="difficulty medium">Medium</span></h5>
+                <p>See what networks people's phones are desperately seeking</p>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- T-Lite Thermal -->
+      <div class="device-card fade-in" style="--card-accent: linear-gradient(90deg, #ff8800, #ff0044)">
+        <span class="device-icon">🌡️</span>
+        <h3 class="device-name">T-Lite Thermal Camera</h3>
+        <div class="device-price">$79.00</div>
+        <div class="device-specs">
+          <span class="spec-tag">MLX90640</span>
+          <span class="spec-tag">32×24 IR</span>
+          <span class="spec-tag">-40°C to 300°C</span>
+        </div>
+        <p class="device-description">
+          See the world in heat. 32×24 thermal sensor reveals hidden heat signatures, people through walls, and electronics in distress.
+        </p>
+        <div class="project-ideas">
+          <h4>🎯 Project Ideas</h4>
+          <ul class="idea-list">
+            <li class="idea-item">
+              <span class="idea-icon">🐱</span>
+              <div class="idea-content">
+                <h5>Cat Tracker <span class="difficulty easy">Easy</span></h5>
+                <p>Find your cat in complete darkness by their heat signature</p>
+              </div>
+            </li>
+            <li class="idea-item">
+              <span class="idea-icon">📷</span>
+              <div class="idea-content">
+                <h5>Hidden Camera Finder <span class="difficulty medium">Medium</span></h5>
+                <p>IR LEDs in spy cameras glow hot — spot them instantly</p>
+              </div>
+            </li>
+            <li class="idea-item">
+              <span class="idea-icon">🚨</span>
+              <div class="idea-content">
+                <h5>Intruder Alert System <span class="difficulty medium">Medium</span></h5>
+                <p>Human-sized heat blob enters frame? Sound the alarm!</p>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- BALA2 Fire -->
+      <div class="device-card fade-in" style="--card-accent: linear-gradient(90deg, #00ff88, #00d4ff)">
+        <span class="device-icon">🤖</span>
+        <h3 class="device-name">BALA2 Fire</h3>
+        <div class="device-price">$79.90</div>
+        <div class="device-specs">
+          <span class="spec-tag">M5Fire</span>
+          <span class="spec-tag">9-axis IMU</span>
+          <span class="spec-tag">Self-Balancing</span>
+          <span class="spec-tag">N20 Motors</span>
+        </div>
+        <p class="device-description">
+          Self-balancing robot with M5Fire brain. 9-axis IMU keeps it upright while you program its behavior. Mount the thermal camera for hunting!
+        </p>
+        <div class="project-ideas">
+          <h4>🎯 Project Ideas</h4>
+          <ul class="idea-list">
+            <li class="idea-item">
+              <span class="idea-icon">🔥</span>
+              <div class="idea-content">
+                <h5>Thermal Hunter <span class="difficulty hard">Hard</span></h5>
+                <p>Mount T-Lite → Robot chases the hottest object in view</p>
+              </div>
+            </li>
+            <li class="idea-item">
+              <span class="idea-icon">🏃</span>
+              <div class="idea-content">
+                <h5>Follow-Me Bot <span class="difficulty hard">Hard</span></h5>
+                <p>Follows your heat signature around the house at a safe distance</p>
+              </div>
+            </li>
+            <li class="idea-item">
+              <span class="idea-icon">🐕</span>
+              <div class="idea-content">
+                <h5>Guard Dog Mode <span class="difficulty medium">Medium</span></h5>
+                <p>Balances in place, spins toward motion, buzzer barks at intruders</p>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- BugC2 -->
+      <div class="device-card fade-in" style="--card-accent: linear-gradient(90deg, #aa44ff, #ff00aa)">
+        <span class="device-icon">🐛</span>
+        <h3 class="device-name">BugC2 + StickC Plus2</h3>
+        <div class="device-price">$56.00</div>
+        <div class="device-specs">
+          <span class="spec-tag">4× DC Motors</span>
+          <span class="spec-tag">RGB LEDs</span>
+          <span class="spec-tag">StickC Plus2</span>
+        </div>
+        <p class="device-description">
+          Four-wheeled speed demon. Quick, nimble, and chaotic. Perfect for cat toys and battle bots.
+        </p>
+        <div class="project-ideas">
+          <h4>🎯 Project Ideas</h4>
+          <ul class="idea-list">
+            <li class="idea-item">
+              <span class="idea-icon">🐱</span>
+              <div class="idea-content">
+                <h5>Cat Chaos Toy <span class="difficulty easy">Easy</span></h5>
+                <p>Random moves, LED flashes, sudden direction changes — cats love it!</p>
+              </div>
+            </li>
+            <li class="idea-item">
+              <span class="idea-icon">🎮</span>
+              <div class="idea-content">
+                <h5>Joystick RC Car <span class="difficulty easy">Easy</span></h5>
+                <p>Pair with Atom Joystick for full remote control action</p>
+              </div>
+            </li>
+            <li class="idea-item">
+              <span class="idea-icon">🪳</span>
+              <div class="idea-content">
+                <h5>Roach Simulator <span class="difficulty medium">Medium</span></h5>
+                <p>Scurries away from light, hides under furniture. Creepy fun!</p>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- M5Stamp Fly -->
+      <div class="device-card fade-in" style="--card-accent: linear-gradient(90deg, #00d4ff, #00ff88)">
+        <span class="device-icon">🚁</span>
+        <h3 class="device-name">M5Stamp Fly</h3>
+        <div class="device-price">$49.95</div>
+        <div class="device-specs">
+          <span class="spec-tag">Quadcopter</span>
+          <span class="spec-tag">Optical Flow</span>
+          <span class="spec-tag">ToF Sensors</span>
+          <span class="spec-tag">ESP-NOW</span>
+        </div>
+        <p class="device-description">
+          Programmable drone with obstacle avoidance and altitude hold. Control it with your Atom Joystick via ESP-NOW protocol.
+        </p>
+        <div class="project-ideas">
+          <h4>🎯 Project Ideas</h4>
+          <ul class="idea-list">
+            <li class="idea-item">
+              <span class="idea-icon">🗺️</span>
+              <div class="idea-content">
+                <h5>Room Mapper <span class="difficulty expert">Expert</span></h5>
+                <p>Fly grid pattern, log ToF readings → create 3D room map</p>
+              </div>
+            </li>
+            <li class="idea-item">
+              <span class="idea-icon">🏠</span>
+              <div class="idea-content">
+                <h5>Patrol Mode <span class="difficulty hard">Hard</span></h5>
+                <p>Hover at waypoints, auto-return when battery low</p>
+              </div>
+            </li>
+            <li class="idea-item">
+              <span class="idea-icon">👋</span>
+              <div class="idea-content">
+                <h5>Gesture Launch <span class="difficulty hard">Hard</span></h5>
+                <p>Wave pattern detected by ground sensor → takeoff!</p>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Atom Joystick -->
+      <div class="device-card fade-in" style="--card-accent: linear-gradient(90deg, #ff8800, #ffcc00)">
+        <span class="device-icon">🎮</span>
+        <h3 class="device-name">Atom Joystick</h3>
+        <div class="device-price">$29.95</div>
+        <div class="device-specs">
+          <span class="spec-tag">AtomS3</span>
+          <span class="spec-tag">Analog X/Y</span>
+          <span class="spec-tag">0.85" LCD</span>
+          <span class="spec-tag">ESP-NOW</span>
+        </div>
+        <p class="device-description">
+          Universal controller for your entire fleet. Already paired with the drone via ESP-NOW. Extend to control all robots!
+        </p>
+        <div class="project-ideas">
+          <h4>🎯 Project Ideas</h4>
+          <ul class="idea-list">
+            <li class="idea-item">
+              <span class="idea-icon">🚁</span>
+              <div class="idea-content">
+                <h5>Drone Pilot <span class="difficulty easy">Easy</span></h5>
+                <p>Already works out-of-box! Control your M5Stamp Fly</p>
+              </div>
+            </li>
+            <li class="idea-item">
+              <span class="idea-icon">🤖</span>
+              <div class="idea-content">
+                <h5>Multi-Robot Master <span class="difficulty medium">Medium</span></h5>
+                <p>Button switches between Bala2, BugC2, and Bala-C control</p>
+              </div>
+            </li>
+            <li class="idea-item">
+              <span class="idea-icon">🎯</span>
+              <div class="idea-content">
+                <h5>Pan-Tilt Controller <span class="difficulty medium">Medium</span></h5>
+                <p>Control servo-based camera gimbal for smooth motion</p>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- BALA-C Plus -->
+      <div class="device-card fade-in" style="--card-accent: linear-gradient(90deg, #00ff88, #00d4ff)">
+        <span class="device-icon">⚖️</span>
+        <h3 class="device-name">BALA-C Plus</h3>
+        <div class="device-price">$45.00</div>
+        <div class="device-specs">
+          <span class="spec-tag">ESP32-PICO</span>
+          <span class="spec-tag">Self-Balancing</span>
+          <span class="spec-tag">Compact</span>
+        </div>
+        <p class="device-description">
+          Smaller sibling to Bala2. Same balancing magic in a more compact form. Great for swarm robotics!
+        </p>
+        <div class="project-ideas">
+          <h4>🎯 Project Ideas</h4>
+          <ul class="idea-list">
+            <li class="idea-item">
+              <span class="idea-icon">🚔</span>
+              <div class="idea-content">
+                <h5>Perimeter Patrol <span class="difficulty medium">Medium</span></h5>
+                <p>Balance around room edges, return to start, repeat</p>
+              </div>
+            </li>
+            <li class="idea-item">
+              <span class="idea-icon">⚔️</span>
+              <div class="idea-content">
+                <h5>Battle Bot <span class="difficulty easy">Easy</span></h5>
+                <p>Jousting matches with Bala2! Last one standing wins</p>
+              </div>
+            </li>
+            <li class="idea-item">
+              <span class="idea-icon">🎭</span>
+              <div class="idea-content">
+                <h5>Dance Bot <span class="difficulty easy">Easy</span></h5>
+                <p>Choreographed moves synced to music beats</p>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- AtomS3 -->
+      <div class="device-card fade-in" style="--card-accent: linear-gradient(90deg, #aa44ff, #00d4ff)">
+        <span class="device-icon">👁️</span>
+        <h3 class="device-name">AtomS3 Dev Kit</h3>
+        <div class="device-price">$15.50</div>
+        <div class="device-specs">
+          <span class="spec-tag">ESP32-S3</span>
+          <span class="spec-tag">0.85" IPS</span>
+          <span class="spec-tag">Tiny</span>
+          <span class="spec-tag">WiFi/BLE</span>
+        </div>
+        <p class="device-description">
+          Tiny but mighty! Full ESP32-S3 power in a package smaller than a quarter. Perfect for covert deployments.
+        </p>
+        <div class="project-ideas">
+          <h4>🎯 Project Ideas</h4>
+          <ul class="idea-list">
+            <li class="idea-item">
+              <span class="idea-icon">📱</span>
+              <div class="idea-content">
+                <h5>BLE Beacon Tracker <span class="difficulty easy">Easy</span></h5>
+                <p>Log every Bluetooth device that passes by with timestamps</p>
+              </div>
+            </li>
+            <li class="idea-item">
+              <span class="idea-icon">🔍</span>
+              <div class="idea-content">
+                <h5>Deauth Detector <span class="difficulty medium">Medium</span></h5>
+                <p>Alert when someone is attacking your WiFi network</p>
+              </div>
+            </li>
+            <li class="idea-item">
+              <span class="idea-icon">📹</span>
+              <div class="idea-content">
+                <h5>Mini Spy Cam <span class="difficulty hard">Hard</span></h5>
+                <p>Attach OV2640 camera module → stream to your phone</p>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Core2 AWS -->
+      <div class="device-card fade-in" style="--card-accent: linear-gradient(90deg, #ff0044, #ff8800)">
+        <span class="device-icon">📱</span>
+        <h3 class="device-name">Core2 AWS Kit</h3>
+        <div class="device-price">$49.90</div>
+        <div class="device-specs">
+          <span class="spec-tag">ESP32-D0WD</span>
+          <span class="spec-tag">2.0" Touch</span>
+          <span class="spec-tag">Speaker</span>
+          <span class="spec-tag">IMU/RTC</span>
+        </div>
+        <p class="device-description">
+          The command center of your fleet. Large touch screen, speaker for alerts, SD card for logging. Connect to AWS cloud!
+        </p>
+        <div class="project-ideas">
+          <h4>🎯 Project Ideas</h4>
+          <ul class="idea-list">
+            <li class="idea-item">
+              <span class="idea-icon">🖥️</span>
+              <div class="idea-content">
+                <h5>Fleet Dashboard <span class="difficulty hard">Hard</span></h5>
+                <p>Monitor all robots via ESP-NOW mesh — see battery, position, status</p>
+              </div>
+            </li>
+            <li class="idea-item">
+              <span class="idea-icon">🏠</span>
+              <div class="idea-content">
+                <h5>Home Hub <span class="difficulty medium">Medium</span></h5>
+                <p>Control smart lights, display weather, doorbell alerts</p>
+              </div>
+            </li>
+            <li class="idea-item">
+              <span class="idea-icon">🎤</span>
+              <div class="idea-content">
+                <h5>Voice Commander <span class="difficulty expert">Expert</span></h5>
+                <p>"BALA, patrol!" — voice triggers robot actions</p>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Combined Projects -->
+  <section id="combined" class="combined-section">
+    <div class="section-header">
+      <h2>🔗 Epic Combinations</h2>
+      <p>When devices work together, magic happens.</p>
+    </div>
+
+    <div class="combined-grid">
+      
+      <div class="combined-card fade-in">
+        <h3 class="combined-title">🏹 Swarm Hunt</h3>
+        <div class="combined-devices">
+          <span>Bala2</span>
+          <span>BugC2</span>
+          <span>Bala-C</span>
+          <span>T-Lite</span>
+          <span>Joystick</span>
+        </div>
+        <p class="combined-description">
+          Turn your living room into a hunting ground. Bala2 with thermal camera hunts the other robots. Use the joystick to control the prey!
+        </p>
+        <div class="combined-steps">
+          <h4>How It Works</h4>
+          <ol>
+            <li>Mount T-Lite thermal camera on Bala2 (hunter)</li>
+            <li>BugC2 and Bala-C are "prey" — controlled by Joystick</li>
+            <li>Bala2 autonomously chases the hottest thermal signature</li>
+            <li>Prey earns points by surviving. Hunter gets points for catches!</li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="combined-card fade-in">
+        <h3 class="combined-title">🏠 Security Grid</h3>
+        <div class="combined-devices">
+          <span>Core2</span>
+          <span>T-Lite</span>
+          <span>AtomS3</span>
+          <span>Cardputer</span>
+        </div>
+        <p class="combined-description">
+          Turn your home into a fortress. Thermal motion detection, WiFi device tracking, and mobile investigation toolkit.
+        </p>
+        <div class="combined-steps">
+          <h4>How It Works</h4>
+          <ol>
+            <li>Core2 = Central dashboard showing all alerts</li>
+            <li>T-Lite = Doorway thermal motion sensor</li>
+            <li>AtomS3 = Hidden WiFi probe logger (who's nearby?)</li>
+            <li>Cardputer = Mobile scanner for investigating anomalies</li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="combined-card fade-in">
+        <h3 class="combined-title">🐱 Cat Entertainment</h3>
+        <div class="combined-devices">
+          <span>BugC2</span>
+          <span>Joystick</span>
+          <span>T-Lite</span>
+        </div>
+        <p class="combined-description">
+          The ultimate cat toy. BugC2 detects the cat's heat signature and flees! Manual override with joystick when kitty gets bored.
+        </p>
+        <div class="combined-steps">
+          <h4>How It Works</h4>
+          <ol>
+            <li>T-Lite detects cat's position via thermal</li>
+            <li>BugC2 runs AWAY from the heat source (flee mode)</li>
+            <li>Random LED flashes and direction changes</li>
+            <li>Press joystick button for manual control takeover</li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="combined-card fade-in">
+        <h3 class="combined-title">🚁 Air & Ground Swarm</h3>
+        <div class="combined-devices">
+          <span>M5Stamp Fly</span>
+          <span>Bala2</span>
+          <span>BugC2</span>
+          <span>Joystick</span>
+        </div>
+        <p class="combined-description">
+          Aerial reconnaissance with ground support. The drone scouts ahead, ground bots follow the drone's shadow!
+        </p>
+        <div class="combined-steps">
+          <h4>How It Works</h4>
+          <ol>
+            <li>Joystick controls the drone</li>
+            <li>Drone broadcasts its position via ESP-NOW</li>
+            <li>Bala2 and BugC2 receive waypoints</li>
+            <li>Ground bots navigate toward drone's last position</li>
+          </ol>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section id="build" class="cta-section">
+    <h2>Ready to Build?</h2>
+    <p>Your $499 arsenal is waiting. Let's turn these ideas into reality.</p>
+    <a href="#" class="cta-button" id="start-building">🚀 Generate The Code</a>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <p>M5Stack Arsenal Showcase • Built for Tinkerers • Your imagination is the limit</p>
+  </footer>
+
+  <script>
+    // Intersection Observer for fade-in animations
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+    // CTA button click
+    document.getElementById('start-building').addEventListener('click', (e) => {
+      e.preventDefault();
+      alert('🔧 Avery is ready to generate your code!\n\nRun: python avery.py generate <project-name>\n\nProjects available:\n• cat-toy\n• thermal-chase\n• wifi-scanner\n• security-grid');
+    });
+  </script>
+</body>
+</html>
