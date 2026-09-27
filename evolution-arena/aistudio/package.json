@@ -1,0 +1,9 @@
+{
+  "name": "evolution-arena",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": { "dev": "vite", "build": "vite build", "preview": "vite preview" },
+  "dependencies": { "@google/genai": "^1.39.0" },
+  "devDependencies": { "@types/node": "^22.14.0", "typescript": "~5.8.2", "vite": "^6.2.0" }
+}

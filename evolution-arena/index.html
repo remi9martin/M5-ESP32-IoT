@@ -1,0 +1,658 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Evolution Arena</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#020617;--panel:#0f172a;--line:#1e293b;--text:#e2e8f0;--dim:#64748b;--acc:#2563eb;--ok:#10b981;--bad:#f43f5e;--warn:#f59e0b;--hi:#fb923c;--med:#facc15;--mono:"JetBrains Mono",ui-monospace,Menlo,monospace}
+*{box-sizing:border-box}
+body{margin:0;font:14px/1.45 Inter,system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--text)}
+header{padding:12px 16px;border-bottom:1px solid var(--line);background:rgba(15,23,42,.5);display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+h1{font-size:16px;font-weight:800;letter-spacing:-.02em;margin:0 auto 0 0;display:flex;align-items:center;gap:10px}
+h1 .logo{width:32px;height:32px;border-radius:9px;background:var(--acc);display:grid;place-items:center;font-weight:800;box-shadow:0 0 18px rgba(37,99,235,.45)}
+h1 em{font-style:normal;color:#3b82f6}
+h3{font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin:0 0 10px}
+main{display:grid;grid-template-columns:320px minmax(0,1fr) 300px;gap:16px;padding:16px}
+@media(max-width:1100px){main{grid-template-columns:1fr}}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;min-width:0}
+.side{display:flex;flex-direction:column;gap:16px;min-width:0}
+.chips{display:flex;flex-wrap:wrap;gap:4px}
+.chips label{margin:0;display:inline-flex;gap:4px;align-items:center;border:1px solid var(--line);border-radius:999px;padding:2px 8px;font-size:11px;color:var(--dim);cursor:pointer}
+.chips input{display:none}
+.chips label:has(input:checked){border-color:var(--acc);color:#93c5fd;background:rgba(37,99,235,.15)}
+.find{border:1px solid;border-radius:8px;padding:6px 8px;margin-bottom:6px;font-size:12px}
+.find b{font-size:10px;text-transform:uppercase;letter-spacing:.06em}
+.sev-critical{border-color:rgba(244,63,94,.5);background:rgba(244,63,94,.12);color:#fda4af}
+.sev-high{border-color:rgba(251,146,60,.5);background:rgba(251,146,60,.12);color:#fdba74}
+.sev-medium{border-color:rgba(250,204,21,.5);background:rgba(250,204,21,.1);color:#fde68a}
+.sev-low{border-color:rgba(59,130,246,.5);background:rgba(59,130,246,.1);color:#93c5fd}
+.audit{border:1px solid var(--line);background:var(--bg);border-radius:10px;padding:8px;margin-bottom:8px;font-size:12px}
+.audit .kv{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:6px;font-size:11px}
+.audit .kv div{border-radius:6px;padding:4px 6px}
+.audit .keep{background:rgba(16,185,129,.07);border:1px solid rgba(16,185,129,.25)}
+.audit .avoid{background:rgba(244,63,94,.07);border:1px solid rgba(244,63,94,.25)}
+.scroll{max-height:360px;overflow:auto}
+.role{display:inline-block;min-width:74px;font-weight:700;font-size:10px;letter-spacing:.08em}
+.r-MUTATOR{color:#4ade80}.r-JUDGE{color:#fbbf24}.r-RED{color:var(--bad)}.r-SYSTEM{color:var(--dim)}
+label{display:block;font-size:12px;color:var(--dim);margin:10px 0 4px}
+input,textarea{width:100%;background:#0b0d10;color:var(--text);border:1px solid var(--line);border-radius:6px;padding:7px 9px;font:inherit}
+textarea{resize:vertical;min-height:60px;font:12px/1.4 var(--mono)}
+.row{display:flex;gap:8px}.row>*{flex:1;min-width:0}
+button{background:#232a34;color:var(--text);border:1px solid var(--line);border-radius:6px;padding:7px 12px;font:inherit;cursor:pointer}
+button.primary{background:var(--acc);border-color:var(--acc);color:#fff}
+button:disabled{opacity:.45;cursor:default}
+.lanes{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:1200px){.lanes{grid-template-columns:1fr}}
+.lane h2{font-size:14px;margin:0 0 8px;display:flex;justify-content:space-between;gap:8px}
+.stage{position:relative;width:100%;aspect-ratio:1280/800;overflow:hidden;border-radius:8px;border:1px solid var(--line);background:#fff}
+.stage iframe{position:absolute;top:0;left:0;width:1280px;height:800px;border:0;transform-origin:0 0;background:#fff}
+.stats{display:flex;gap:12px;font-size:12px;color:var(--dim);margin:8px 0;flex-wrap:wrap}
+.stats b{color:var(--text)}
+.status{font-size:12px;min-height:18px;color:var(--warn)}
+.hist{max-height:150px;overflow:auto;font-size:12px;border-top:1px solid var(--line);margin-top:8px;padding-top:6px}
+.hist div{display:flex;justify-content:space-between;gap:8px;padding:2px 0}
+.hist span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hist button{padding:1px 6px;font-size:11px}
+#log{height:240px;overflow:auto;font:12px/1.5 var(--mono);background:#0a0f1c;white-space:pre-wrap;margin-top:16px}
+.ok{color:var(--ok)}.bad{color:var(--bad)}.dim{color:var(--dim)}
+svg{width:100%;height:60px;display:block}
+.chk{display:flex;gap:6px;align-items:center;color:var(--dim);font-size:12px;margin-top:10px}
+.chk input{width:auto}
+</style>
+</head>
+<body>
+<header>
+  <h1><span class="logo">X</span>EVOLUTION ARENA <em>GOVERNOR</em></h1>
+  <span class="dim" id="meter">iter 0 · 0 API calls</span>
+  <button class="primary" id="startBtn">Start</button>
+  <button id="stopBtn" disabled>Pause</button>
+  <button id="resetBtn">Reset</button>
+</header>
+<main>
+  <section class="panel">
+    <label for="apiKey">Gemini API key (kept in this tab only)</label>
+    <input id="apiKey" type="password" placeholder="AIza…">
+    <label for="model">Model (use "mock" to test offline)</label>
+    <input id="model" value="gemini-2.5-flash">
+    <label for="task">Task / goal</label>
+    <textarea id="task" rows="3">Build the best-looking storefront front end for a peptides brand: hero, product grid with purity/COA badges, product detail, cart drawer. Premium, clinical-clean, fast, mobile-first. Research-use-only wording; no medical or dosing claims.</textarea>
+    <label for="judges">Judges: one persona per line (they vote)</label>
+    <textarea id="judges" rows="3">Apple's web design team and a senior front-end engineer: ruthless about typography, whitespace, polish, clarity, page weight, speed, and accessibility.</textarea>
+    <label for="directive">Directive (prepended to every mutation)</label>
+    <textarea id="directive" rows="2" placeholder="e.g. Ship small, precise changes. No unrequested features."></textarea>
+    <label>Red-team gates (a critical or high finding vetoes a winning change)</label>
+    <div class="chips" id="gates"></div>
+    <label for="seed">Seed code (optional: paste your own HTML to evolve it)</label>
+    <textarea id="seed" rows="3" placeholder="Leave empty to have each agent create its own v0"></textarea>
+    <div class="row">
+      <div><label for="maxIter">Iterations</label><input id="maxIter" type="number" value="100" min="1"></div>
+      <div><label for="minChange">Min change %</label><input id="minChange" type="number" value="1" min="0"></div>
+      <div><label for="crossEvery">Duel every</label><input id="crossEvery" type="number" value="10" min="1"></div>
+    </div>
+    <div class="row">
+      <div><label for="budget">Max API calls (0 = no cap)</label><input id="budget" type="number" value="300" min="0"></div>
+      <div><label for="autoExport">Auto-export save every N iters</label><input id="autoExport" type="number" value="20" min="0"></div>
+    </div>
+    <label class="chk"><input id="patch" type="checkbox" checked> Patch mode: the AI sends small find/replace edits and the code applies them (far fewer tokens)</label>
+    <label class="chk"><input id="visual" type="checkbox"> Judges also see screenshots (better taste, more tokens)</label>
+    <div class="row" style="margin-top:10px"><button id="exportBtn">Export save</button><button id="importBtn">Import save</button></div>
+    <input id="importFile" type="file" accept=".json,application/json" hidden>
+    <div class="panel" style="margin-top:14px;padding:10px">
+      <div style="display:flex;justify-content:space-between;align-items:center"><b>Best so far</b><span id="bestInfo" class="dim">none</span></div>
+      <svg id="chart" viewBox="0 0 300 60" preserveAspectRatio="none" aria-label="Score history"></svg>
+      <div class="row" style="margin-top:8px"><button id="dlBtn">Download best</button><button id="openBestBtn">Open best</button></div>
+    </div>
+  </section>
+  <section style="min-width:0">
+    <div class="lanes">
+      <div class="panel lane" data-id="A"></div>
+      <div class="panel lane" data-id="B"></div>
+    </div>
+    <div class="panel" id="log"></div>
+  </section>
+  <section class="side">
+    <div class="panel"><h3>Red Team Monitor</h3><div id="redPanel" class="scroll"></div></div>
+    <div class="panel"><h3>Post-Pass Audit</h3><div id="auditPanel" class="scroll"></div></div>
+  </section>
+</main>
+<script>
+'use strict';
+const $ = id => document.getElementById(id);
+const END_SCRIPT = '<' + '/script>'; // spelled out so HTML parsers never see an escaped end tag
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const other = id => id === 'A' ? 'B' : 'A';
+const KEY = 'evoArena.v1';
+let S = null, running = false;
+
+// ---------- config ----------
+const FIELDS = ['model', 'task', 'judges', 'directive', 'seed', 'maxIter', 'minChange', 'crossEvery', 'budget', 'autoExport', 'visual', 'patch'];
+const CHECKS = ['visual', 'patch'];
+const RED_TEAM = [
+  { id: 'sec_priv', name: 'Security & Privacy', objective: 'Prevent data leaks, unauthorized access, and privacy violations.', checks: ['Is PII exposed?', 'Are permissions least-privilege?', 'Is encryption used?'] },
+  { id: 'legal_proc', name: 'Legal & Procedural', objective: 'Ensure compliance with laws and standard operating procedures.', checks: ['Is this legally permissible?', 'Does it violate terms of service?', 'Is there liability risk?'] },
+  { id: 'med_clin', name: 'Medical / Clinical Risk', objective: 'Prevent harm in health-related contexts.', checks: ['Is this medical advice?', 'Are contraindications considered?', 'Is the source authoritative?'] },
+  { id: 'fin_trade', name: 'Finance & Trading Risk', objective: 'Mitigate financial loss and market manipulation.', checks: ['Is this financial advice?', 'Is there a risk of ruin?', 'Are assumptions stated?'] },
+  { id: 'bias_fair', name: 'Bias & Fairness', objective: 'Identify and mitigate systemic biases.', checks: ['Is a group disproportionately affected?', 'Is the training data biased?', 'Are stereotypes reinforced?'] },
+  { id: 'incent_game', name: 'Incentives & Game Theory', objective: 'Analyze actor incentives and potential gaming of the system.', checks: ['Can this be exploited?', 'What are the perverse incentives?', 'Is there a Nash equilibrium?'] },
+  { id: 'second_order', name: 'Second-Order Effects', objective: 'Anticipate downstream consequences.', checks: ['What happens next?', 'What is the butterfly effect?', 'Are there unintended side effects?'] },
+  { id: 'data_qual', name: 'Data Quality & Missing Data', objective: 'Ensure robust decision making despite imperfect data.', checks: ['Is data missing?', 'Is the data stale?', 'Are hallucinations possible?'] },
+  { id: 'adv_actor', name: 'Adversarial Actors', objective: 'Model hostile interference.', checks: ['How would an attacker use this?', 'Is prompt injection possible?', 'Is there denial of service risk?'] },
+  { id: 'rep_risk', name: 'Reputational Risk', objective: 'Protect the brand and trust.', checks: ['How would this look on the front page?', 'Is trust eroded?', 'Is it offensive?'] },
+  { id: 'ops_risk', name: 'Operational Risk', objective: 'Ensure system stability and process integrity.', checks: ['Can the process break?', 'Is there a single point of failure?', 'Is complexity too high?'] },
+  { id: 'res_env', name: 'Resource & Environmental', objective: 'Minimize waste and environmental impact.', checks: ['Is this computationally wasteful?', 'Does it require excessive resources?', 'Is it sustainable?'] },
+  { id: 'comp_bound', name: 'Compliance Boundaries', objective: 'Strict adherence to regulatory frameworks.', checks: ['GDPR/CCPA compliant?', 'Industry specific regulations?', 'Audit trail maintained?'] },
+  { id: 'stat_valid', name: 'Statistical Validity', objective: 'Ensure mathematical soundness.', checks: ['Are sample sizes sufficient?', 'Is correlation confused with causation?', 'Are p-values relevant?'] },
+  { id: 'narr_bias', name: 'Narrative Bias', objective: 'Prevent story-telling from obscuring facts.', checks: ['Is this just a good story?', 'Are facts cherry-picked?', 'Is emotional appeal used?'] },
+  { id: 'power_asym', name: 'Power Asymmetry', objective: 'Analyze power dynamics between actors.', checks: ['Does this exploit the weak?', 'Is consent informed?', 'Who benefits most?'] },
+  { id: 'unknown_unknown', name: 'Unknown-Unknowns', objective: 'Account for deep uncertainty.', checks: ['What are we not asking?', 'Is this a black swan event?', 'Is the model overconfident?'] },
+];
+const DEFAULT_GATES = ['sec_priv', 'legal_proc', 'med_clin', 'ops_risk'];
+const redName = id => RED_TEAM.find(d => d.id === id)?.name || id;
+function selectedGates() { return [...document.querySelectorAll('#gates input:checked')].map(i => i.value); }
+function cfg() {
+  return {
+    directive: $('directive').value.trim(), gates: selectedGates(),
+    apiKey: $('apiKey').value.trim(), model: $('model').value.trim(), task: $('task').value.trim(),
+    judges: $('judges').value.split('\n').map(s => s.trim()).filter(Boolean),
+    seed: $('seed').value.trim(), maxIter: +$('maxIter').value || 100,
+    minChange: (+$('minChange').value || 0) / 100, crossEvery: +$('crossEvery').value || 10,
+    visual: $('visual').checked, patch: $('patch').checked,
+    budget: +$('budget').value || 0, autoExport: +$('autoExport').value || 0,
+  };
+}
+
+// ---------- LLM ----------
+const MUT_SCHEMA = { type: 'OBJECT', properties: {
+  plan: { type: 'STRING' }, changes: { type: 'ARRAY', items: { type: 'STRING' } }, html: { type: 'STRING' } },
+  required: ['plan', 'changes', 'html'] };
+const STR_ARR = { type: 'ARRAY', items: { type: 'STRING' } };
+const PATCH_SCHEMA = { type: 'OBJECT', properties: {
+  plan: { type: 'STRING' }, changes: STR_ARR,
+  edits: { type: 'ARRAY', items: { type: 'OBJECT', properties: { find: { type: 'STRING' }, replace: { type: 'STRING' } }, required: ['find', 'replace'] } } },
+  required: ['plan', 'changes', 'edits'] };
+const JUDGE_SCHEMA = { type: 'OBJECT', properties: {
+  reason: { type: 'STRING' }, scoreX: { type: 'INTEGER' }, scoreY: { type: 'INTEGER' },
+  winner: { type: 'STRING', enum: ['X', 'Y'] }, learned: { type: 'STRING' }, keep: STR_ARR, avoid: STR_ARR },
+  required: ['reason', 'scoreX', 'scoreY', 'winner', 'learned', 'keep', 'avoid'] };
+const RED_SCHEMA = { type: 'OBJECT', properties: { failures: { type: 'ARRAY', items: { type: 'OBJECT', properties: {
+  domainId: { type: 'STRING' }, severity: { type: 'STRING', enum: ['critical', 'high', 'medium', 'low'] }, description: { type: 'STRING' } },
+  required: ['domainId', 'severity', 'description'] } } }, required: ['failures'] };
+
+async function llm(parts, schema, temperature) {
+  const c = cfg();
+  S.calls++;
+  if (c.model === 'mock') { await sleep(150); return mockLLM(parts, schema); }
+  if (!c.apiKey && window.arenaLLM) { // AI Studio build: its bridge supplies the key
+    for (let attempt = 0; ; attempt++) {
+      try { return JSON.parse(await window.arenaLLM(c.model, parts, schema, temperature)); }
+      catch (e) { if (attempt < 4 && /429|500|503|overload|quota|rate/i.test(String(e.message))) { await sleep(2000 * 2 ** attempt); continue; } throw e; }
+    }
+  }
+  if (!c.apiKey) throw new Error('Missing API key');
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(c.model)}:generateContent`;
+  for (let attempt = 0; ; attempt++) {
+    const r = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-goog-api-key': c.apiKey },
+      body: JSON.stringify({ contents: [{ role: 'user', parts }],
+        generationConfig: { temperature, responseMimeType: 'application/json', responseSchema: schema } }) });
+    if (r.ok) {
+      const j = await r.json(), cand = j.candidates?.[0];
+      const text = (cand?.content?.parts || []).map(p => p.text || '').join('');
+      if (!text) throw new Error('Empty response: ' + (cand?.finishReason || j.promptFeedback?.blockReason || 'unknown'));
+      return JSON.parse(text);
+    }
+    if ((r.status === 429 || r.status >= 500) && attempt < 5) { await sleep(2000 * 2 ** attempt); continue; }
+    throw new Error(`API ${r.status}: ${(await r.text()).slice(0, 300)}`);
+  }
+}
+
+let mockN = 0;
+function mockLLM(parts, schema) {
+  if (schema === MUT_SCHEMA) {
+    const cur = (parts[0].text.match(/<CURRENT>\n([\s\S]*?)\n[<]\/CURRENT>/) || [])[1]
+      || '<!doctype html><html><head><title>Mock</title></head><body style="font-family:sans-serif"><h1>Mock site</h1></body></html>';
+    const n = ++mockN, hue = Math.floor(Math.random() * 360);
+    const broken = Math.random() < 0.1 ? '<script>undefinedFn()' + END_SCRIPT : '';
+    return { plan: 'mock plan ' + n, changes: ['add block ' + n],
+      html: cur.replace('</body>', `<section style="padding:24px;background:hsl(${hue} 70% 85%)">Block ${n}</section>${broken}\n</body>`) };
+  }
+  if (schema === PATCH_SCHEMA) {
+    const n = ++mockN, hue = Math.floor(Math.random() * 360);
+    const broken = Math.random() < 0.1 ? '<script>undefinedFn()' + END_SCRIPT : '';
+    return { plan: 'mock patch ' + n, changes: ['add block ' + n],
+      edits: [{ find: '</body>', replace: `<section style="padding:24px;background:hsl(${hue} 70% 85%)">Block ${n}</section>${broken}\n</body>` }] };
+  }
+  if (schema === RED_SCHEMA) {
+    const gate = (parts[0].text.match(/^- (\w+):/m) || [])[1] || 'sec_priv', r = Math.random();
+    return { failures: r < 0.15 ? [{ domainId: gate, severity: 'critical', description: 'mock critical finding' }]
+      : r < 0.4 ? [{ domainId: gate, severity: 'medium', description: 'mock medium finding' }] : [] };
+  }
+  const a = 40 + Math.floor(Math.random() * 55), b = 40 + Math.floor(Math.random() * 55);
+  return { reason: 'mock judge', scoreX: a, scoreY: b, winner: a >= b ? 'X' : 'Y',
+    learned: 'mock lesson ' + mockN, keep: ['clear hero'], avoid: ['clutter ' + mockN] };
+}
+
+// ---------- sandbox boot + probe ----------
+function probeFn(token, shot) {
+  var t0 = performance.now(), errs = [];
+  addEventListener('error', function (e) { errs.push(String(e.message || 'error')); });
+  addEventListener('unhandledrejection', function (e) { errs.push('Unhandled rejection: ' + e.reason); });
+  addEventListener('load', function () {
+    setTimeout(function () {
+      var m = { token: token, loadMs: Math.round(performance.now() - t0), errors: errs.slice(0, 5),
+        nodes: document.getElementsByTagName('*').length };
+      if (!shot) return parent.postMessage(m, '*');
+      var s = document.createElement('script');
+      s.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+      s.onerror = function () { parent.postMessage(m, '*'); };
+      s.onload = function () {
+        html2canvas(document.body, { x: 0, y: 0, width: 1280, height: 800, windowWidth: 1280, windowHeight: 800,
+          scale: 0.6, logging: false, useCORS: true })
+          .then(function (c) { m.shot = c.toDataURL('image/jpeg', 0.7); parent.postMessage(m, '*'); })
+          .catch(function () { parent.postMessage(m, '*'); });
+      };
+      document.head.appendChild(s);
+    }, 600);
+  });
+}
+function inject(code, token, shot) {
+  const probe = `<script>(${probeFn})(${JSON.stringify(token)},${shot})${END_SCRIPT}`;
+  if (/<head[^>]*>/i.test(code)) return code.replace(/<head[^>]*>/i, m => m + probe);
+  if (/<html[^>]*>/i.test(code)) return code.replace(/<html[^>]*>/i, m => m + '<head>' + probe + '</head>');
+  return probe + code;
+}
+// "Shut down" the lane's sandbox and reboot it with new code; resolves with runtime proof.
+function boot(id, code) {
+  return new Promise(res => {
+    const token = Math.random().toString(36).slice(2), bytes = new Blob([code]).size;
+    const done = r => { clearTimeout(timer); removeEventListener('message', on); res(r); };
+    const timer = setTimeout(() => done({ ok: false, errors: ['Boot timeout: page never finished loading'], loadMs: null, nodes: 0, bytes }), 15000);
+    function on(e) {
+      const m = e.data;
+      if (m && m.token === token) done({ ok: !m.errors.length, errors: m.errors, loadMs: m.loadMs, nodes: m.nodes, shot: m.shot || null, bytes });
+    }
+    addEventListener('message', on);
+    frame(id).srcdoc = inject(code, token, cfg().visual);
+  });
+}
+
+// ---------- evolution ----------
+const STRENGTH = [
+  { name: 'refine', temp: 0.7, text: 'Make 2-4 focused, clearly visible improvements. Keep what already works.' },
+  { name: 'rework', temp: 0.9, text: 'Small tweaks stopped winning. Rework at least one whole section or the visual system (type scale, spacing, color, layout) in a clearly noticeable way.' },
+  { name: 'leap', temp: 1.0, text: 'The site is stuck in a local optimum. Take a bold leap: a new layout or visual direction or a restructure, while still meeting the task. Borrow the rival\'s best ideas if useful.' },
+];
+const strength = stag => STRENGTH[stag >= 6 ? 2 : stag >= 3 ? 1 : 0];
+
+const RULES = `Hard rules:
+- Return ONE complete, self-contained HTML5 document in "html" (inline CSS/JS; external resources only from major CDNs or Google Fonts).
+- It must load with zero JavaScript errors and be responsive from mobile to desktop.
+- Keep it lean and fast; no bloat, no dead code; follow security best practices (no inline secrets, safe DOM APIs).
+- List each concrete change you made in "changes" (short phrases).`;
+const PATCH_RULES = `Hard rules:
+- Do NOT return the whole page. Return "edits": a short list of {find, replace} pairs.
+- Each "find" must be copied EXACTLY from the current code (whitespace included) and be unique enough to match once; keep it short (a line or two).
+- To add something, find a nearby anchor (e.g. "</style>" or "</main>") and replace it with your addition plus the anchor.
+- The result must still load with zero JavaScript errors and stay responsive, lean and secure.
+- List each concrete change in "changes" (short phrases).`;
+
+function genesisPrompt(c, id) {
+  return `${c.directive ? 'DIRECTIVE: ' + c.directive + '\n\n' : ''}You are agent ${id}, an elite web designer and engineer. Create version 1 of a website.
+TASK: ${c.task}
+Judges who will rate it:\n${c.judges.map(j => '- ' + j).join('\n')}
+Pick a distinctive design direction of your own.\n${RULES}`;
+}
+function mutatePrompt(c, L, R, st) {
+  const recent = L.tried.slice(-8).map(t => `- ${t.ok ? 'KEPT' : 'REJECTED'}: ${t.summary}${t.why ? ' (' + t.why + ')' : ''}`).join('\n') || '(none yet)';
+  const audits = (L.audit || []).slice(-3), uniq = a => [...new Set(a)].slice(0, 6);
+  const keep = uniq(audits.flatMap(a => a.keep)), avoid = uniq(audits.flatMap(a => a.avoid));
+  const red = (L.red || []).map(f => `- ${redName(f.domainId)} (${f.severity}): ${f.description}`).join('\n');
+  return `${c.directive ? 'DIRECTIVE: ' + c.directive + '\n\n' : ''}You are agent ${R.id}, an elite web designer and engineer. Improve the website of your counterpart, agent ${L.id}.
+Your version will be booted in a sandbox and judged against the current one. If it is not better, it is thrown away.
+
+TASK / GOAL: ${c.task}
+Judges who define "better":\n${c.judges.map(j => '- ' + j).join('\n')}
+
+MUTATION STRENGTH: ${st.name.toUpperCase()}. ${st.text}
+Change enough that the difference is visible or measurable; reformatting alone does not count.
+
+Recent attempts on this site (learn from them and do not repeat rejected ideas):
+${recent}
+${keep.length ? '\nJudges said REINFORCE:\n' + keep.map(k => '+ ' + k).join('\n') : ''}${avoid.length ? '\nJudges said AVOID:\n' + avoid.map(k => '- ' + k).join('\n') : ''}${red ? '\nOpen red-team findings to fix:\n' + red : ''}
+
+${c.patch ? PATCH_RULES : RULES}
+${c.patch ? '' : `
+Rival site (agent ${R.id}'s own current version, for inspiration only):
+<RIVAL>
+${R.code.slice(0, 20000)}
+</RIVAL>
+`}
+Site to improve:
+<CURRENT>
+${L.code}
+</CURRENT>`;
+}
+
+function changeRatio(a, b) {
+  const tok = s => s.split(/>\s*|\n/).map(x => x.trim()).filter(Boolean);
+  const A = tok(a), B = tok(b), bag = new Map();
+  A.forEach(l => bag.set(l, (bag.get(l) || 0) + 1));
+  let common = 0;
+  B.forEach(l => { const n = bag.get(l); if (n) { common++; bag.set(l, n - 1); } });
+  return 1 - (2 * common) / ((A.length + B.length) || 1);
+}
+
+const probeLine = (n, p) => p ? `${n}: ${p.bytes} bytes, load ${p.loadMs ?? '?'}ms, ${p.nodes} DOM nodes, JS errors: ${p.errors.join('; ') || 'none'}` : `${n}: no runtime data`;
+const imgPart = shot => ({ inlineData: { mimeType: 'image/jpeg', data: shot.split(',')[1] } });
+
+// Pairwise judging (a = incumbent, b = challenger), order randomised against position bias.
+async function judge(c, a, b) {
+  const flip = Math.random() < 0.5, X = flip ? b : a, Y = flip ? a : b;
+  const votes = await Promise.all(c.judges.map(persona => {
+    const parts = [{ text: `You are a judge: ${persona}
+The website must fulfil this task: ${c.task}
+Compare version X and version Y. Score each 0-100 by your standards and the task. Runtime errors or a broken layout are severe penalties. Be decisive and pick a winner.
+${probeLine('X', X.probe)}\n${probeLine('Y', Y.probe)}` }];
+    if (c.visual) {
+      if (X.probe?.shot) parts.push({ text: 'Screenshot of X (desktop viewport):' }, imgPart(X.probe.shot));
+      if (Y.probe?.shot) parts.push({ text: 'Screenshot of Y (desktop viewport):' }, imgPart(Y.probe.shot));
+    }
+    parts.push({ text: `<X>\n${X.code.slice(0, 25000)}\n</X>\n<Y>\n${Y.code.slice(0, 25000)}\n</Y>` });
+    return llm(parts, JUDGE_SCHEMA, 0.2);
+  }));
+  let sa = 0, sb = 0, bVotes = 0;
+  for (const v of votes) {
+    const [va, vb] = flip ? [v.scoreY, v.scoreX] : [v.scoreX, v.scoreY];
+    sa += va; sb += vb;
+    if ((v.winner === 'X') === flip) bVotes++;
+  }
+  const n = votes.length || 1;
+  // Majority vote; a split panel is broken by the average score (a full tie keeps the incumbent).
+  return { bWins: bVotes > n / 2 || (bVotes === n / 2 && sb > sa), sa: Math.round(sa / n), sb: Math.round(sb / n), reason: votes.map(v => v.reason).join(' | '),
+    learned: [...new Set(votes.map(v => v.learned).filter(Boolean))].join(' '),
+    keep: [...new Set(votes.flatMap(v => v.keep || []))], avoid: [...new Set(votes.flatMap(v => v.avoid || []))] };
+}
+
+// Red-team gate: one call reviews a winning candidate against the selected risk domains.
+async function redTeam(c, code) {
+  if (!c.gates.length) return [];
+  const domains = RED_TEAM.filter(d => c.gates.includes(d.id));
+  const r = await llm([{ text: `You are a red team auditing a website before it ships.
+Task it serves: ${c.task}
+Review ONLY these domains:
+${domains.map(d => `- ${d.id}: ${d.name}. ${d.objective} Checks: ${d.checks.join(' ')}`).join('\n')}
+Report concrete, real problems in this code only (no speculation). Severity: critical = must not ship; high = serious; medium/low = should fix later. Return an empty list if it is clean.
+<CODE>
+${code.slice(0, 40000)}
+</CODE>` }], RED_SCHEMA, 0.1);
+  return (r.failures || []).filter(f => c.gates.includes(f.domainId));
+}
+
+function newLane(id) { return { id, code: '', score: 0, probe: null, gen: 0, stag: 0, tried: [], versions: [], audit: [], red: [], status: '' }; }
+function addAudit(L, j, verdict) {
+  (L.audit ||= []).push({ iter: S.iter, verdict, learned: j.learned || '', keep: j.keep || [], avoid: j.avoid || [] });
+  if (L.audit.length > 20) L.audit.shift();
+}
+function pushVersion(L, summary) {
+  L.versions.push({ gen: L.gen, iter: S.iter, score: L.score, summary, code: L.code });
+  if (L.versions.length > 25) L.versions.shift();
+}
+function note(L, ok, summary, why) { L.tried.push({ ok, summary, why }); if (L.tried.length > 30) L.tried.shift(); }
+function updateBest() {
+  for (const L of Object.values(S.lanes))
+    if (L.code && (!S.best || L.score > S.best.score)) S.best = { code: L.code, score: L.score, lane: L.id, iter: S.iter };
+}
+
+async function genesis(c) {
+  log('Genesis: creating v1 for both lanes…');
+  await Promise.all(['A', 'B'].map(async id => {
+    const L = S.lanes[id];
+    status(id, c.seed ? 'Booting seed code…' : 'Creating v1…');
+    L.code = c.seed || (await llm([{ text: genesisPrompt(c, id) }], MUT_SCHEMA, 1.0)).html;
+    L.probe = await boot(id, L.code);
+  }));
+  const j = await judge(c, S.lanes.A, S.lanes.B);
+  S.lanes.A.score = j.sa; S.lanes.B.score = j.sb;
+  for (const L of Object.values(S.lanes)) { pushVersion(L, 'genesis'); status(L.id, ''); }
+  log(`Genesis scores: A ${j.sa}, B ${j.sb}`, 'ok');
+}
+
+async function evolveLane(c, id) {
+  const L = S.lanes[id], R = S.lanes[other(id)], st = strength(L.stag);
+  const reject = async (summary, why) => {
+    L.stag++; note(L, false, summary, why);
+    log(`#${S.iter} ${id} ✗ ${summary.slice(0, 120)} (${why})`, 'bad', why.startsWith('red-team') ? 'RED' : 'JUDGE');
+  };
+  status(id, `Agent ${R.id} is mutating ${id} (${st.name})…`);
+  let cand;
+  try { cand = await llm([{ text: mutatePrompt(c, L, R, st) }], c.patch ? PATCH_SCHEMA : MUT_SCHEMA, st.temp); }
+  catch (e) { L.stag++; log(`#${S.iter} ${id} mutation error: ${e.message}`, 'bad', 'MUTATOR'); return; }
+  const summary = (cand.changes || []).join('; ') || cand.plan || '(no summary)';
+  if (c.patch) {
+    const r = applyEdits(L.code, cand.edits || []);
+    if (r.error) return reject(summary, r.error);
+    cand.html = r.html;
+  }
+  const ratio = changeRatio(L.code, cand.html || '');
+  if (!cand.html || ratio < c.minChange) return reject(summary, `change too small: ${(ratio * 100).toFixed(1)}%`);
+
+  status(id, 'Shutting down and rebooting with new code…');
+  const probe = await boot(id, cand.html);
+  if (!probe.ok) { await reject(summary, 'failed to boot: ' + probe.errors[0]); status(id, 'Rolling back…'); await boot(id, L.code); return; }
+
+  status(id, 'Judges evaluating…');
+  let j;
+  try { j = await judge(c, L, { code: cand.html, probe }); }
+  catch (e) { await reject(summary, 'judge error: ' + e.message); await boot(id, L.code); return; }
+  addAudit(L, j, j.bWins ? 'won' : 'lost');
+  if (j.bWins && c.gates.length) {
+    status(id, 'Red team auditing…');
+    let finds;
+    try { finds = await redTeam(c, cand.html); }
+    catch (e) { await reject(summary, 'red-team error: ' + e.message); await boot(id, L.code); return; }
+    const veto = finds.find(f => f.severity === 'critical' || f.severity === 'high');
+    L.redLast = { iter: S.iter, vetoed: !!veto, finds };
+    if (veto) {
+      await reject(summary, `red-team: ${redName(veto.domainId)} ${veto.severity}: ${veto.description}`);
+      status(id, 'Rolling back…'); await boot(id, L.code); return;
+    }
+    L.red = finds;
+  }
+  if (j.bWins) {
+    L.code = cand.html; L.probe = probe; L.score = j.sb; L.gen++; L.stag = 0;
+    note(L, true, summary); pushVersion(L, summary);
+    log(`#${S.iter} ${id} ✓ gen ${L.gen} (${j.sa}→${j.sb}) ${summary.slice(0, 140)}`, 'ok', 'JUDGE');
+  } else {
+    L.score = Math.round(L.score * 0.7 + j.sa * 0.3);
+    await reject(summary, `lost ${j.sb} vs ${j.sa}`);
+    status(id, 'Rolling back…'); await boot(id, L.code);
+  }
+}
+
+// Patch mode: the model sends find/replace pairs; plain code applies them (first match each).
+function applyEdits(code, edits) {
+  if (!edits.length) return { error: 'patch was empty' };
+  for (const e of edits) {
+    const at = e.find ? code.indexOf(e.find) : -1;
+    if (at < 0) return { error: 'patch did not apply: ' + String(e.find).slice(0, 40) };
+    code = code.slice(0, at) + e.replace + code.slice(at + e.find.length);
+  }
+  return { html: code };
+}
+
+// Survival of the fittest across lanes: a clearly weaker lane adopts the stronger design.
+async function duel(c) {
+  const A = S.lanes.A, B = S.lanes.B;
+  const j = await judge(c, A, B);
+  A.score = j.sa; B.score = j.sb;
+  const [win, lose] = j.bWins ? [B, A] : [A, B];
+  log(`Duel #${S.iter}: A ${j.sa} vs B ${j.sb}, ${win.id} wins`);
+  if (win.score - lose.score >= 10) {
+    lose.code = win.code; lose.probe = win.probe; lose.score = win.score; lose.stag = 0; lose.gen++;
+    note(lose, true, `adopted ${win.id}'s design after losing a duel`);
+    pushVersion(lose, `adopted ${win.id}'s design`);
+    log(`${lose.id} went extinct and now continues from ${win.id}'s design`, 'bad');
+    await boot(lose.id, lose.code);
+  }
+}
+
+async function run() {
+  running = true; syncButtons();
+  try {
+    let c = cfg();
+    if (!c.task) throw new Error('Enter a task first');
+    if (!S) { S = { task: c.task, iter: 0, calls: 0, best: null, scores: [], lanes: { A: newLane('A'), B: newLane('B') } }; }
+    if (!S.lanes.A.code) { await genesis(c); updateBest(); save(); render(); }
+    while (running && S.iter < c.maxIter) {
+      c = cfg(); // settings can be changed live while it runs
+      if (c.budget && S.calls >= c.budget) { log(`API budget reached (${S.calls} calls). Raise "Max API calls" to continue.`, 'bad'); break; }
+      S.iter++;
+      await Promise.all(['A', 'B'].map(id => evolveLane(c, id)));
+      if (running && S.iter % c.crossEvery === 0) await duel(c).catch(e => log('Duel error: ' + e.message, 'bad'));
+      S.scores.push([S.lanes.A.score, S.lanes.B.score]);
+      if (S.scores.length > 1000) S.scores.shift();
+      updateBest(); save(); render();
+      if (c.autoExport && S.iter % c.autoExport === 0) exportSave(true);
+    }
+    if (S.iter >= c.maxIter) log(`Done: ${S.iter} iterations. Best score ${S.best?.score} (lane ${S.best?.lane}).`, 'ok');
+  } catch (e) { log('Stopped: ' + e.message, 'bad'); }
+  running = false; ['A', 'B'].forEach(id => status(id, '')); syncButtons(); render();
+}
+
+// ---------- persistence ----------
+function snapshot() {
+  const strip = L => ({ ...L, status: '', probe: L.probe && { ...L.probe, shot: null } });
+  return JSON.stringify({ app: 'evolution-arena', version: 1, savedAt: new Date().toISOString(),
+    S: S && { ...S, lanes: { A: strip(S.lanes.A), B: strip(S.lanes.B) } },
+    cfg: { ...Object.fromEntries(FIELDS.map(f => [f, CHECKS.includes(f) ? $(f).checked : $(f).value])), gates: selectedGates() } });
+}
+// Save file: survives AI Studio resets, cleared storage, or moving to another machine.
+function exportSave(auto) {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([snapshot()], { type: 'application/json' }));
+  a.download = `arena-save-iter${S?.iter || 0}.json`; a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 10000);
+  log(`${auto ? 'Auto-exported' : 'Exported'} save file (iteration ${S?.iter || 0})`);
+}
+function applySaved(d) {
+  for (const [f, v] of Object.entries(d.cfg || {})) {
+    if (f === 'gates') document.querySelectorAll('#gates input').forEach(i => { i.checked = v.includes(i.value); });
+    else if ($(f)) CHECKS.includes(f) ? ($(f).checked = v) : ($(f).value = v);
+  }
+  S = d.S || null;
+  if (S) {
+    log(`Restored run at iteration ${S.iter}. Press Start to continue.`);
+    for (const L of Object.values(S.lanes)) if (L.code) boot(L.id, L.code).then(p => { L.probe = p; render(); });
+  }
+  render();
+}
+function save() {
+  const data = snapshot;
+  try { localStorage.setItem(KEY, data()); }
+  catch { // over quota: keep fewer versions and retry once
+    for (const L of Object.values(S.lanes)) L.versions = L.versions.slice(-5);
+    try { localStorage.setItem(KEY, data()); } catch { log('Could not save progress (storage full)', 'bad'); }
+  }
+}
+function load() {
+  let d; try { d = JSON.parse(localStorage.getItem(KEY)); } catch { return; }
+  if (d) applySaved(d);
+}
+
+// ---------- UI ----------
+function frame(id) { return document.querySelector(`.lane[data-id="${id}"] iframe`); }
+function buildLanes() {
+  document.querySelectorAll('.lane').forEach(el => {
+    const id = el.dataset.id;
+    el.innerHTML = `<h2><span>Lane ${id} <span class="dim">(edited by agent ${other(id)})</span></span><button data-open="${id}" style="padding:2px 8px;font-size:12px">Open</button></h2>
+      <div class="stage"><iframe sandbox="allow-scripts" title="Lane ${id} sandbox"></iframe></div>
+      <div class="status"></div><div class="stats"></div><div class="hist"></div>`;
+    const stage = el.querySelector('.stage'), fr = stage.querySelector('iframe');
+    new ResizeObserver(() => { fr.style.transform = `scale(${stage.clientWidth / 1280})`; }).observe(stage);
+  });
+}
+function status(id, text) { if (S) S.lanes[id].status = text; document.querySelector(`.lane[data-id="${id}"] .status`).textContent = text; }
+const esc = s => String(s).replace(/[&<>"]/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch]));
+function render() {
+  $('meter').textContent = `iter ${S?.iter || 0} · ${S?.calls || 0} API calls`;
+  if (!S) return;
+  for (const L of Object.values(S.lanes)) {
+    const el = document.querySelector(`.lane[data-id="${L.id}"]`), p = L.probe;
+    el.querySelector('.stats').innerHTML = `<span>score <b>${L.score}</b></span><span>gen <b>${L.gen}</b></span><span>stuck <b>${L.stag}</b> (${strength(L.stag).name})</span>`
+      + (p ? `<span><b>${(p.bytes / 1024).toFixed(1)}</b> KB</span><span>load <b>${p.loadMs ?? '?'}</b> ms</span>` : '');
+    el.querySelector('.hist').innerHTML = L.versions.slice().reverse().map((v, i) =>
+      `<div><span title="${esc(v.summary)}">g${v.gen} · ${v.score} · ${esc(v.summary)}</span><button data-restore="${L.id}:${L.versions.length - 1 - i}">restore</button></div>`).join('');
+  }
+  const lanes = Object.values(S.lanes);
+  $('redPanel').innerHTML = lanes.map(L => {
+    const r = L.redLast;
+    if (!r) return `<div class="dim" style="font-size:12px;margin-bottom:6px">Lane ${L.id}: not audited yet</div>`;
+    const head = `<div style="font-size:11px;margin-bottom:4px" class="${r.vetoed ? 'bad' : 'ok'}">Lane ${L.id} · iter ${r.iter} · ${r.vetoed ? 'VETOED' : r.finds.length ? 'passed with notes' : 'clean'}</div>`;
+    return head + r.finds.map(f => `<div class="find sev-${esc(f.severity)}"><b>${esc(redName(f.domainId))} · ${esc(f.severity)}</b><div>${esc(f.description)}</div></div>`).join('');
+  }).join('');
+  const audits = lanes.flatMap(L => (L.audit || []).map(a => ({ ...a, lane: L.id }))).sort((a, b) => b.iter - a.iter).slice(0, 12);
+  const li = arr => arr.slice(0, 3).map(x => `<div>${esc(x)}</div>`).join('');
+  $('auditPanel').innerHTML = audits.length ? audits.map(a => `<div class="audit"><div><b class="${a.verdict === 'won' ? 'ok' : 'bad'}" style="font-size:10px">ITER ${a.iter} · LANE ${a.lane} · ${a.verdict.toUpperCase()}</b></div>
+    <div class="dim">${esc(a.learned)}</div><div class="kv"><div class="keep"><b class="ok" style="font-size:9px">REINFORCE</b>${li(a.keep)}</div><div class="avoid"><b class="bad" style="font-size:9px">AVOID</b>${li(a.avoid)}</div></div></div>`).join('')
+    : '<div class="dim" style="font-size:12px">Waiting for the first judged pass…</div>';
+  $('bestInfo').textContent = S.best ? `${S.best.score} (lane ${S.best.lane}, iter ${S.best.iter})` : 'none';
+  const pts = S.scores, n = Math.max(pts.length - 1, 1);
+  const line = k => pts.map((p, i) => `${(i / n * 300).toFixed(1)},${(60 - p[k] * 0.6).toFixed(1)}`).join(' ');
+  $('chart').innerHTML = pts.length ? `<polyline fill="none" stroke="#5b9dff" stroke-width="1.5" points="${line(0)}"/><polyline fill="none" stroke="#3ecf8e" stroke-width="1.5" points="${line(1)}"/>` : '';
+}
+function log(msg, cls = '', role = 'SYSTEM') {
+  const d = document.createElement('div'), tag = document.createElement('span');
+  d.className = cls; tag.className = 'role r-' + role; tag.textContent = role === 'RED' ? 'RED-TEAM' : role;
+  d.append(`${new Date().toLocaleTimeString()}  `, tag, msg);
+  const box = $('log'); box.appendChild(d);
+  while (box.children.length > 400) box.firstChild.remove();
+  box.scrollTop = box.scrollHeight;
+}
+function syncButtons() { $('startBtn').disabled = running; $('stopBtn').disabled = !running; $('resetBtn').disabled = running; }
+function openHtml(code) { const u = URL.createObjectURL(new Blob([code], { type: 'text/html' })); open(u, '_blank'); setTimeout(() => URL.revokeObjectURL(u), 60000); }
+
+$('startBtn').onclick = run;
+$('stopBtn').onclick = () => { running = false; log('Pausing after the current round…'); $('stopBtn').disabled = true; };
+$('resetBtn').onclick = () => {
+  if (!confirm('Discard this run and all versions?')) return;
+  S = null; try { localStorage.removeItem(KEY); } catch {}
+  ['A', 'B'].forEach(id => { frame(id).srcdoc = ''; status(id, ''); });
+  document.querySelectorAll('.stats,.hist,#redPanel,#auditPanel').forEach(e => e.innerHTML = ''); $('chart').innerHTML = ''; render();
+};
+$('exportBtn').onclick = () => exportSave(false);
+$('importBtn').onclick = () => { if (!running) $('importFile').click(); };
+$('importFile').onchange = async e => {
+  const f = e.target.files[0]; e.target.value = '';
+  if (!f) return;
+  try {
+    const d = JSON.parse(await f.text());
+    if (d.app !== 'evolution-arena') throw new Error('not an Evolution Arena save file');
+    applySaved(d); save();
+  } catch (err) { log('Import failed: ' + err.message, 'bad'); }
+};
+if (window.arenaLLM) $('apiKey').placeholder = 'Using the AI Studio key (leave empty)';
+$('dlBtn').onclick = () => {
+  if (!S?.best) return;
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([S.best.code], { type: 'text/html' }));
+  a.download = `best-score${S.best.score}-iter${S.best.iter}.html`; a.click();
+};
+$('openBestBtn').onclick = () => S?.best && openHtml(S.best.code);
+document.addEventListener('click', async e => {
+  const o = e.target.dataset?.open, r = e.target.dataset?.restore;
+  if (o && S?.lanes[o].code) openHtml(S.lanes[o].code);
+  if (r && S && !running) {
+    const [id, idx] = r.split(':'), L = S.lanes[id], v = L.versions[+idx];
+    L.code = v.code; L.score = v.score; L.stag = 0; note(L, true, `manual rollback to gen ${v.gen}`);
+    log(`Lane ${id} rolled back to gen ${v.gen}`);
+    L.probe = await boot(id, L.code); save(); render();
+  }
+});
+
+$('gates').innerHTML = RED_TEAM.map(d => `<label title="${esc(d.objective)}"><input type="checkbox" value="${d.id}"${DEFAULT_GATES.includes(d.id) ? ' checked' : ''}>${esc(d.name)}</label>`).join('');
+buildLanes(); load(); render(); syncButtons();
+</script>
+</body>
+</html>
