@@ -1,0 +1,459 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Evolution Arena</title>
+<style>
+:root{--bg:#0d0f12;--panel:#161a20;--line:#262c35;--text:#e7eaee;--dim:#8b95a3;--acc:#5b9dff;--ok:#3ecf8e;--bad:#ff6b6b;--warn:#f5b041}
+*{box-sizing:border-box}
+body{margin:0;font:14px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--text)}
+header{padding:12px 16px;border-bottom:1px solid var(--line);display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+h1{font-size:16px;margin:0 auto 0 0}
+main{display:grid;grid-template-columns:340px 1fr;gap:16px;padding:16px}
+@media(max-width:900px){main{grid-template-columns:1fr}}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;min-width:0}
+label{display:block;font-size:12px;color:var(--dim);margin:10px 0 4px}
+input,textarea{width:100%;background:#0b0d10;color:var(--text);border:1px solid var(--line);border-radius:6px;padding:7px 9px;font:inherit}
+textarea{resize:vertical;min-height:60px;font:12px/1.4 ui-monospace,Menlo,monospace}
+.row{display:flex;gap:8px}.row>*{flex:1;min-width:0}
+button{background:#232a34;color:var(--text);border:1px solid var(--line);border-radius:6px;padding:7px 12px;font:inherit;cursor:pointer}
+button.primary{background:var(--acc);border-color:var(--acc);color:#fff}
+button:disabled{opacity:.45;cursor:default}
+.lanes{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:1200px){.lanes{grid-template-columns:1fr}}
+.lane h2{font-size:14px;margin:0 0 8px;display:flex;justify-content:space-between;gap:8px}
+.stage{position:relative;width:100%;aspect-ratio:1280/800;overflow:hidden;border-radius:8px;border:1px solid var(--line);background:#fff}
+.stage iframe{position:absolute;top:0;left:0;width:1280px;height:800px;border:0;transform-origin:0 0;background:#fff}
+.stats{display:flex;gap:12px;font-size:12px;color:var(--dim);margin:8px 0;flex-wrap:wrap}
+.stats b{color:var(--text)}
+.status{font-size:12px;min-height:18px;color:var(--warn)}
+.hist{max-height:150px;overflow:auto;font-size:12px;border-top:1px solid var(--line);margin-top:8px;padding-top:6px}
+.hist div{display:flex;justify-content:space-between;gap:8px;padding:2px 0}
+.hist span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hist button{padding:1px 6px;font-size:11px}
+#log{height:240px;overflow:auto;font:12px/1.5 ui-monospace,Menlo,monospace;white-space:pre-wrap;margin-top:16px}
+.ok{color:var(--ok)}.bad{color:var(--bad)}.dim{color:var(--dim)}
+svg{width:100%;height:60px;display:block}
+.chk{display:flex;gap:6px;align-items:center;color:var(--dim);font-size:12px;margin-top:10px}
+.chk input{width:auto}
+</style>
+</head>
+<body>
+<header>
+  <h1>Evolution Arena <span class="dim" style="font-weight:400">· two agents improve each other's code, and only improvements survive</span></h1>
+  <span class="dim" id="meter">iter 0 · 0 API calls</span>
+  <button class="primary" id="startBtn">Start</button>
+  <button id="stopBtn" disabled>Pause</button>
+  <button id="resetBtn">Reset</button>
+</header>
+<main>
+  <section class="panel">
+    <label for="apiKey">Gemini API key (kept in this tab only)</label>
+    <input id="apiKey" type="password" placeholder="AIza…">
+    <label for="model">Model (use "mock" to test offline)</label>
+    <input id="model" value="gemini-2.5-flash">
+    <label for="task">Task / goal</label>
+    <textarea id="task" rows="3">Build a landing page for seemyvitals.com: live health vitals (heart rate, SpO2, temperature) from a wearable ESP32 device. Fast, lean, beautiful, trustworthy.</textarea>
+    <label for="judges">Judges: one persona per line (they vote)</label>
+    <textarea id="judges" rows="3">Apple's web design team: ruthless about typography, whitespace, polish, and clarity.
+Senior front-end engineer: page weight, load speed, accessibility, security, clean code.</textarea>
+    <label for="seed">Seed code (optional: paste your own HTML to evolve it)</label>
+    <textarea id="seed" rows="3" placeholder="Leave empty to have each agent create its own v0"></textarea>
+    <div class="row">
+      <div><label for="maxIter">Iterations</label><input id="maxIter" type="number" value="100" min="1"></div>
+      <div><label for="minChange">Min change %</label><input id="minChange" type="number" value="3" min="0"></div>
+      <div><label for="crossEvery">Duel every</label><input id="crossEvery" type="number" value="10" min="1"></div>
+    </div>
+    <label class="chk"><input id="visual" type="checkbox" checked> Judges also see screenshots (better taste, more tokens)</label>
+    <div class="panel" style="margin-top:14px;padding:10px">
+      <div style="display:flex;justify-content:space-between;align-items:center"><b>Best so far</b><span id="bestInfo" class="dim">none</span></div>
+      <svg id="chart" viewBox="0 0 300 60" preserveAspectRatio="none" aria-label="Score history"></svg>
+      <div class="row" style="margin-top:8px"><button id="dlBtn">Download best</button><button id="openBestBtn">Open best</button></div>
+    </div>
+  </section>
+  <section style="min-width:0">
+    <div class="lanes">
+      <div class="panel lane" data-id="A"></div>
+      <div class="panel lane" data-id="B"></div>
+    </div>
+    <div class="panel" id="log"></div>
+  </section>
+</main>
+<script>
+'use strict';
+const $ = id => document.getElementById(id);
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const other = id => id === 'A' ? 'B' : 'A';
+const KEY = 'evoArena.v1';
+let S = null, running = false;
+
+// ---------- config ----------
+const FIELDS = ['model', 'task', 'judges', 'seed', 'maxIter', 'minChange', 'crossEvery', 'visual'];
+function cfg() {
+  return {
+    apiKey: $('apiKey').value.trim(), model: $('model').value.trim(), task: $('task').value.trim(),
+    judges: $('judges').value.split('\n').map(s => s.trim()).filter(Boolean),
+    seed: $('seed').value.trim(), maxIter: +$('maxIter').value || 100,
+    minChange: (+$('minChange').value || 0) / 100, crossEvery: +$('crossEvery').value || 10,
+    visual: $('visual').checked,
+  };
+}
+
+// ---------- LLM ----------
+const MUT_SCHEMA = { type: 'OBJECT', properties: {
+  plan: { type: 'STRING' }, changes: { type: 'ARRAY', items: { type: 'STRING' } }, html: { type: 'STRING' } },
+  required: ['plan', 'changes', 'html'] };
+const JUDGE_SCHEMA = { type: 'OBJECT', properties: {
+  reason: { type: 'STRING' }, scoreX: { type: 'INTEGER' }, scoreY: { type: 'INTEGER' },
+  winner: { type: 'STRING', enum: ['X', 'Y'] } }, required: ['reason', 'scoreX', 'scoreY', 'winner'] };
+
+async function llm(parts, schema, temperature) {
+  const c = cfg();
+  S.calls++;
+  if (c.model === 'mock') { await sleep(150); return mockLLM(parts, schema); }
+  if (!c.apiKey) throw new Error('Missing API key');
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(c.model)}:generateContent`;
+  for (let attempt = 0; ; attempt++) {
+    const r = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-goog-api-key': c.apiKey },
+      body: JSON.stringify({ contents: [{ role: 'user', parts }],
+        generationConfig: { temperature, responseMimeType: 'application/json', responseSchema: schema } }) });
+    if (r.ok) {
+      const j = await r.json(), cand = j.candidates?.[0];
+      const text = (cand?.content?.parts || []).map(p => p.text || '').join('');
+      if (!text) throw new Error('Empty response: ' + (cand?.finishReason || j.promptFeedback?.blockReason || 'unknown'));
+      return JSON.parse(text);
+    }
+    if ((r.status === 429 || r.status >= 500) && attempt < 5) { await sleep(2000 * 2 ** attempt); continue; }
+    throw new Error(`API ${r.status}: ${(await r.text()).slice(0, 300)}`);
+  }
+}
+
+let mockN = 0;
+function mockLLM(parts, schema) {
+  if (schema === MUT_SCHEMA) {
+    const cur = (parts[0].text.match(/<CURRENT>\n([\s\S]*?)\n<\/CURRENT>/) || [])[1]
+      || '<!doctype html><html><head><title>Mock</title></head><body style="font-family:sans-serif"><h1>Mock site</h1></body></html>';
+    const n = ++mockN, hue = Math.floor(Math.random() * 360);
+    const broken = Math.random() < 0.1 ? '<script>undefinedFn()<\/script>' : '';
+    return { plan: 'mock plan ' + n, changes: ['add block ' + n],
+      html: cur.replace('</body>', `<section style="padding:24px;background:hsl(${hue} 70% 85%)">Block ${n}</section>${broken}\n</body>`) };
+  }
+  const a = 40 + Math.floor(Math.random() * 55), b = 40 + Math.floor(Math.random() * 55);
+  return { reason: 'mock judge', scoreX: a, scoreY: b, winner: a >= b ? 'X' : 'Y' };
+}
+
+// ---------- sandbox boot + probe ----------
+function probeFn(token, shot) {
+  var t0 = performance.now(), errs = [];
+  addEventListener('error', function (e) { errs.push(String(e.message || 'error')); });
+  addEventListener('unhandledrejection', function (e) { errs.push('Unhandled rejection: ' + e.reason); });
+  addEventListener('load', function () {
+    setTimeout(function () {
+      var m = { token: token, loadMs: Math.round(performance.now() - t0), errors: errs.slice(0, 5),
+        nodes: document.getElementsByTagName('*').length };
+      if (!shot) return parent.postMessage(m, '*');
+      var s = document.createElement('script');
+      s.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+      s.onerror = function () { parent.postMessage(m, '*'); };
+      s.onload = function () {
+        html2canvas(document.body, { x: 0, y: 0, width: 1280, height: 800, windowWidth: 1280, windowHeight: 800,
+          scale: 0.6, logging: false, useCORS: true })
+          .then(function (c) { m.shot = c.toDataURL('image/jpeg', 0.7); parent.postMessage(m, '*'); })
+          .catch(function () { parent.postMessage(m, '*'); });
+      };
+      document.head.appendChild(s);
+    }, 600);
+  });
+}
+function inject(code, token, shot) {
+  const probe = `<script>(${probeFn})(${JSON.stringify(token)},${shot})<\/script>`;
+  if (/<head[^>]*>/i.test(code)) return code.replace(/<head[^>]*>/i, m => m + probe);
+  if (/<html[^>]*>/i.test(code)) return code.replace(/<html[^>]*>/i, m => m + '<head>' + probe + '</head>');
+  return probe + code;
+}
+// "Shut down" the lane's sandbox and reboot it with new code; resolves with runtime proof.
+function boot(id, code) {
+  return new Promise(res => {
+    const token = Math.random().toString(36).slice(2), bytes = new Blob([code]).size;
+    const done = r => { clearTimeout(timer); removeEventListener('message', on); res(r); };
+    const timer = setTimeout(() => done({ ok: false, errors: ['Boot timeout: page never finished loading'], loadMs: null, nodes: 0, bytes }), 15000);
+    function on(e) {
+      const m = e.data;
+      if (m && m.token === token) done({ ok: !m.errors.length, errors: m.errors, loadMs: m.loadMs, nodes: m.nodes, shot: m.shot || null, bytes });
+    }
+    addEventListener('message', on);
+    frame(id).srcdoc = inject(code, token, cfg().visual);
+  });
+}
+
+// ---------- evolution ----------
+const STRENGTH = [
+  { name: 'refine', temp: 0.7, text: 'Make 2-4 focused, clearly visible improvements. Keep what already works.' },
+  { name: 'rework', temp: 0.9, text: 'Small tweaks stopped winning. Rework at least one whole section or the visual system (type scale, spacing, color, layout) in a clearly noticeable way.' },
+  { name: 'leap', temp: 1.0, text: 'The site is stuck in a local optimum. Take a bold leap: a new layout or visual direction or a restructure, while still meeting the task. Borrow the rival\'s best ideas if useful.' },
+];
+const strength = stag => STRENGTH[stag >= 6 ? 2 : stag >= 3 ? 1 : 0];
+
+const RULES = `Hard rules:
+- Return ONE complete, self-contained HTML5 document in "html" (inline CSS/JS; external resources only from major CDNs or Google Fonts).
+- It must load with zero JavaScript errors and be responsive from mobile to desktop.
+- Keep it lean and fast; no bloat, no dead code; follow security best practices (no inline secrets, safe DOM APIs).
+- List each concrete change you made in "changes" (short phrases).`;
+
+function genesisPrompt(c, id) {
+  return `You are agent ${id}, an elite web designer and engineer. Create version 1 of a website.
+TASK: ${c.task}
+Judges who will rate it:\n${c.judges.map(j => '- ' + j).join('\n')}
+Pick a distinctive design direction of your own.\n${RULES}`;
+}
+function mutatePrompt(c, L, R, st) {
+  const recent = L.tried.slice(-8).map(t => `- ${t.ok ? 'KEPT' : 'REJECTED'}: ${t.summary}${t.why ? ' (' + t.why + ')' : ''}`).join('\n') || '(none yet)';
+  return `You are agent ${R.id}, an elite web designer and engineer. Improve the website of your counterpart, agent ${L.id}.
+Your version will be booted in a sandbox and judged against the current one. If it is not better, it is thrown away.
+
+TASK / GOAL: ${c.task}
+Judges who define "better":\n${c.judges.map(j => '- ' + j).join('\n')}
+
+MUTATION STRENGTH: ${st.name.toUpperCase()}. ${st.text}
+Change enough that the difference is visible or measurable; reformatting alone does not count.
+
+Recent attempts on this site (learn from them and do not repeat rejected ideas):
+${recent}
+
+${RULES}
+
+Rival site (agent ${R.id}'s own current version, for inspiration only):
+<RIVAL>
+${R.code.slice(0, 20000)}
+</RIVAL>
+
+Site to improve:
+<CURRENT>
+${L.code}
+</CURRENT>`;
+}
+
+function changeRatio(a, b) {
+  const tok = s => s.split(/>\s*|\n/).map(x => x.trim()).filter(Boolean);
+  const A = tok(a), B = tok(b), bag = new Map();
+  A.forEach(l => bag.set(l, (bag.get(l) || 0) + 1));
+  let common = 0;
+  B.forEach(l => { const n = bag.get(l); if (n) { common++; bag.set(l, n - 1); } });
+  return 1 - (2 * common) / ((A.length + B.length) || 1);
+}
+
+const probeLine = (n, p) => p ? `${n}: ${p.bytes} bytes, load ${p.loadMs ?? '?'}ms, ${p.nodes} DOM nodes, JS errors: ${p.errors.join('; ') || 'none'}` : `${n}: no runtime data`;
+const imgPart = shot => ({ inline_data: { mime_type: 'image/jpeg', data: shot.split(',')[1] } });
+
+// Pairwise judging (a = incumbent, b = challenger), order randomised against position bias.
+async function judge(c, a, b) {
+  const flip = Math.random() < 0.5, X = flip ? b : a, Y = flip ? a : b;
+  const votes = await Promise.all(c.judges.map(persona => {
+    const parts = [{ text: `You are a judge: ${persona}
+The website must fulfil this task: ${c.task}
+Compare version X and version Y. Score each 0-100 by your standards and the task. Runtime errors or a broken layout are severe penalties. Be decisive and pick a winner.
+${probeLine('X', X.probe)}\n${probeLine('Y', Y.probe)}` }];
+    if (c.visual) {
+      if (X.probe?.shot) parts.push({ text: 'Screenshot of X (desktop viewport):' }, imgPart(X.probe.shot));
+      if (Y.probe?.shot) parts.push({ text: 'Screenshot of Y (desktop viewport):' }, imgPart(Y.probe.shot));
+    }
+    parts.push({ text: `<X>\n${X.code.slice(0, 25000)}\n</X>\n<Y>\n${Y.code.slice(0, 25000)}\n</Y>` });
+    return llm(parts, JUDGE_SCHEMA, 0.2);
+  }));
+  let sa = 0, sb = 0, bVotes = 0;
+  for (const v of votes) {
+    const [va, vb] = flip ? [v.scoreY, v.scoreX] : [v.scoreX, v.scoreY];
+    sa += va; sb += vb;
+    if ((v.winner === 'X') === flip) bVotes++;
+  }
+  const n = votes.length || 1;
+  return { bWins: bVotes > n / 2, sa: Math.round(sa / n), sb: Math.round(sb / n), reason: votes.map(v => v.reason).join(' | ') };
+}
+
+function newLane(id) { return { id, code: '', score: 0, probe: null, gen: 0, stag: 0, tried: [], versions: [], status: '' }; }
+function pushVersion(L, summary) {
+  L.versions.push({ gen: L.gen, iter: S.iter, score: L.score, summary, code: L.code });
+  if (L.versions.length > 25) L.versions.shift();
+}
+function note(L, ok, summary, why) { L.tried.push({ ok, summary, why }); if (L.tried.length > 30) L.tried.shift(); }
+function updateBest() {
+  for (const L of Object.values(S.lanes))
+    if (L.code && (!S.best || L.score > S.best.score)) S.best = { code: L.code, score: L.score, lane: L.id, iter: S.iter };
+}
+
+async function genesis(c) {
+  log('Genesis: creating v1 for both lanes…');
+  await Promise.all(['A', 'B'].map(async id => {
+    const L = S.lanes[id];
+    status(id, c.seed ? 'Booting seed code…' : 'Creating v1…');
+    L.code = c.seed || (await llm([{ text: genesisPrompt(c, id) }], MUT_SCHEMA, 1.0)).html;
+    L.probe = await boot(id, L.code);
+  }));
+  const j = await judge(c, S.lanes.A, S.lanes.B);
+  S.lanes.A.score = j.sa; S.lanes.B.score = j.sb;
+  for (const L of Object.values(S.lanes)) { pushVersion(L, 'genesis'); status(L.id, ''); }
+  log(`Genesis scores: A ${j.sa}, B ${j.sb}`, 'ok');
+}
+
+async function evolveLane(c, id) {
+  const L = S.lanes[id], R = S.lanes[other(id)], st = strength(L.stag);
+  const reject = async (summary, why) => {
+    L.stag++; note(L, false, summary, why);
+    log(`#${S.iter} ${id} ✗ ${summary.slice(0, 120)} (${why})`, 'bad');
+  };
+  status(id, `Agent ${R.id} is mutating ${id} (${st.name})…`);
+  let cand;
+  try { cand = await llm([{ text: mutatePrompt(c, L, R, st) }], MUT_SCHEMA, st.temp); }
+  catch (e) { L.stag++; log(`#${S.iter} ${id} mutation error: ${e.message}`, 'bad'); return; }
+  const summary = (cand.changes || []).join('; ') || cand.plan || '(no summary)';
+  const ratio = changeRatio(L.code, cand.html || '');
+  if (!cand.html || ratio < c.minChange) return reject(summary, `change too small: ${(ratio * 100).toFixed(1)}%`);
+
+  status(id, 'Shutting down and rebooting with new code…');
+  const probe = await boot(id, cand.html);
+  if (!probe.ok) { await reject(summary, 'failed to boot: ' + probe.errors[0]); status(id, 'Rolling back…'); await boot(id, L.code); return; }
+
+  status(id, 'Judges evaluating…');
+  let j;
+  try { j = await judge(c, L, { code: cand.html, probe }); }
+  catch (e) { await reject(summary, 'judge error: ' + e.message); await boot(id, L.code); return; }
+  if (j.bWins) {
+    L.code = cand.html; L.probe = probe; L.score = j.sb; L.gen++; L.stag = 0;
+    note(L, true, summary); pushVersion(L, summary);
+    log(`#${S.iter} ${id} ✓ gen ${L.gen} (${j.sa}→${j.sb}) ${summary.slice(0, 140)}`, 'ok');
+  } else {
+    L.score = Math.round(L.score * 0.7 + j.sa * 0.3);
+    await reject(summary, `lost ${j.sb} vs ${j.sa}`);
+    status(id, 'Rolling back…'); await boot(id, L.code);
+  }
+}
+
+// Survival of the fittest across lanes: a clearly weaker lane adopts the stronger design.
+async function duel(c) {
+  const A = S.lanes.A, B = S.lanes.B;
+  const j = await judge(c, A, B);
+  A.score = j.sa; B.score = j.sb;
+  const [win, lose] = j.bWins ? [B, A] : [A, B];
+  log(`Duel #${S.iter}: A ${j.sa} vs B ${j.sb}, ${win.id} wins`);
+  if (win.score - lose.score >= 10) {
+    lose.code = win.code; lose.probe = win.probe; lose.score = win.score; lose.stag = 0; lose.gen++;
+    note(lose, true, `adopted ${win.id}'s design after losing a duel`);
+    pushVersion(lose, `adopted ${win.id}'s design`);
+    log(`${lose.id} went extinct and now continues from ${win.id}'s design`, 'bad');
+    await boot(lose.id, lose.code);
+  }
+}
+
+async function run() {
+  running = true; syncButtons();
+  try {
+    let c = cfg();
+    if (!c.task) throw new Error('Enter a task first');
+    if (!S) { S = { task: c.task, iter: 0, calls: 0, best: null, scores: [], lanes: { A: newLane('A'), B: newLane('B') } }; }
+    if (!S.lanes.A.code) { await genesis(c); updateBest(); save(); render(); }
+    while (running && S.iter < c.maxIter) {
+      c = cfg(); // settings can be changed live while it runs
+      S.iter++;
+      await Promise.all(['A', 'B'].map(id => evolveLane(c, id)));
+      if (running && S.iter % c.crossEvery === 0) await duel(c).catch(e => log('Duel error: ' + e.message, 'bad'));
+      S.scores.push([S.lanes.A.score, S.lanes.B.score]);
+      if (S.scores.length > 1000) S.scores.shift();
+      updateBest(); save(); render();
+    }
+    if (S.iter >= c.maxIter) log(`Done: ${S.iter} iterations. Best score ${S.best?.score} (lane ${S.best?.lane}).`, 'ok');
+  } catch (e) { log('Stopped: ' + e.message, 'bad'); }
+  running = false; ['A', 'B'].forEach(id => status(id, '')); syncButtons(); render();
+}
+
+// ---------- persistence ----------
+function save() {
+  const strip = L => ({ ...L, status: '', probe: L.probe && { ...L.probe, shot: null } });
+  const data = () => JSON.stringify({ S: { ...S, lanes: { A: strip(S.lanes.A), B: strip(S.lanes.B) } },
+    cfg: Object.fromEntries(FIELDS.map(f => [f, f === 'visual' ? $(f).checked : $(f).value])) });
+  try { localStorage.setItem(KEY, data()); }
+  catch { // over quota: keep fewer versions and retry once
+    for (const L of Object.values(S.lanes)) L.versions = L.versions.slice(-5);
+    try { localStorage.setItem(KEY, data()); } catch { log('Could not save progress (storage full)', 'bad'); }
+  }
+}
+function load() {
+  let d; try { d = JSON.parse(localStorage.getItem(KEY)); } catch { return; }
+  if (!d) return;
+  for (const [f, v] of Object.entries(d.cfg || {})) f === 'visual' ? ($(f).checked = v) : ($(f).value = v);
+  S = d.S;
+  if (S) {
+    log(`Restored run at iteration ${S.iter}. Press Start to continue.`);
+    for (const L of Object.values(S.lanes)) if (L.code) boot(L.id, L.code).then(p => { L.probe = p; render(); });
+  }
+}
+
+// ---------- UI ----------
+function frame(id) { return document.querySelector(`.lane[data-id="${id}"] iframe`); }
+function buildLanes() {
+  document.querySelectorAll('.lane').forEach(el => {
+    const id = el.dataset.id;
+    el.innerHTML = `<h2><span>Lane ${id} <span class="dim">(edited by agent ${other(id)})</span></span><button data-open="${id}" style="padding:2px 8px;font-size:12px">Open</button></h2>
+      <div class="stage"><iframe sandbox="allow-scripts" title="Lane ${id} sandbox"></iframe></div>
+      <div class="status"></div><div class="stats"></div><div class="hist"></div>`;
+    const stage = el.querySelector('.stage'), fr = stage.querySelector('iframe');
+    new ResizeObserver(() => { fr.style.transform = `scale(${stage.clientWidth / 1280})`; }).observe(stage);
+  });
+}
+function status(id, text) { if (S) S.lanes[id].status = text; document.querySelector(`.lane[data-id="${id}"] .status`).textContent = text; }
+const esc = s => String(s).replace(/[&<>"]/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch]));
+function render() {
+  $('meter').textContent = `iter ${S?.iter || 0} · ${S?.calls || 0} API calls`;
+  if (!S) return;
+  for (const L of Object.values(S.lanes)) {
+    const el = document.querySelector(`.lane[data-id="${L.id}"]`), p = L.probe;
+    el.querySelector('.stats').innerHTML = `<span>score <b>${L.score}</b></span><span>gen <b>${L.gen}</b></span><span>stuck <b>${L.stag}</b> (${strength(L.stag).name})</span>`
+      + (p ? `<span><b>${(p.bytes / 1024).toFixed(1)}</b> KB</span><span>load <b>${p.loadMs ?? '?'}</b> ms</span>` : '');
+    el.querySelector('.hist').innerHTML = L.versions.slice().reverse().map((v, i) =>
+      `<div><span title="${esc(v.summary)}">g${v.gen} · ${v.score} · ${esc(v.summary)}</span><button data-restore="${L.id}:${L.versions.length - 1 - i}">restore</button></div>`).join('');
+  }
+  $('bestInfo').textContent = S.best ? `${S.best.score} (lane ${S.best.lane}, iter ${S.best.iter})` : 'none';
+  const pts = S.scores, n = Math.max(pts.length - 1, 1);
+  const line = k => pts.map((p, i) => `${(i / n * 300).toFixed(1)},${(60 - p[k] * 0.6).toFixed(1)}`).join(' ');
+  $('chart').innerHTML = pts.length ? `<polyline fill="none" stroke="#5b9dff" stroke-width="1.5" points="${line(0)}"/><polyline fill="none" stroke="#3ecf8e" stroke-width="1.5" points="${line(1)}"/>` : '';
+}
+function log(msg, cls = '') {
+  const d = document.createElement('div');
+  d.className = cls; d.textContent = `${new Date().toLocaleTimeString()}  ${msg}`;
+  const box = $('log'); box.appendChild(d);
+  while (box.children.length > 400) box.firstChild.remove();
+  box.scrollTop = box.scrollHeight;
+}
+function syncButtons() { $('startBtn').disabled = running; $('stopBtn').disabled = !running; $('resetBtn').disabled = running; }
+function openHtml(code) { const u = URL.createObjectURL(new Blob([code], { type: 'text/html' })); open(u, '_blank'); setTimeout(() => URL.revokeObjectURL(u), 60000); }
+
+$('startBtn').onclick = run;
+$('stopBtn').onclick = () => { running = false; log('Pausing after the current round…'); $('stopBtn').disabled = true; };
+$('resetBtn').onclick = () => {
+  if (!confirm('Discard this run and all versions?')) return;
+  S = null; try { localStorage.removeItem(KEY); } catch {}
+  ['A', 'B'].forEach(id => { frame(id).srcdoc = ''; status(id, ''); });
+  document.querySelectorAll('.stats,.hist').forEach(e => e.innerHTML = ''); $('chart').innerHTML = ''; render();
+};
+$('dlBtn').onclick = () => {
+  if (!S?.best) return;
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([S.best.code], { type: 'text/html' }));
+  a.download = `best-score${S.best.score}-iter${S.best.iter}.html`; a.click();
+};
+$('openBestBtn').onclick = () => S?.best && openHtml(S.best.code);
+document.addEventListener('click', async e => {
+  const o = e.target.dataset?.open, r = e.target.dataset?.restore;
+  if (o && S?.lanes[o].code) openHtml(S.lanes[o].code);
+  if (r && S && !running) {
+    const [id, idx] = r.split(':'), L = S.lanes[id], v = L.versions[+idx];
+    L.code = v.code; L.score = v.score; L.stag = 0; note(L, true, `manual rollback to gen ${v.gen}`);
+    log(`Lane ${id} rolled back to gen ${v.gen}`);
+    L.probe = await boot(id, L.code); save(); render();
+  }
+});
+
+buildLanes(); load(); render(); syncButtons();
+</script>
+</body>
+</html>
