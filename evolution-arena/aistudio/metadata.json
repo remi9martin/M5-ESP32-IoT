@@ -1,0 +1,6 @@
+{
+  "name": "Evolution Arena Governor",
+  "description": "Two agents improve each other's website in sandboxes; code boots, measures and rolls back, AI judges and red-team gates decide what survives.",
+  "requestFramePermissions": [],
+  "majorCapabilities": []
+}
