@@ -3,8 +3,8 @@
 // Each round proposes one playbook change, runs the real arena on every training task with it,
 // and keeps it only if a fixed evaluator says the resulting sites beat the current champion's.
 //
-//   node run.mjs --rounds 25 --iters 3 --out runs/pilot            (queue mode: the AG agent answers requests)
-//   node run.mjs --rounds 100 --out runs/pilot --resume            (continue the same run)
+//   node run.mjs --rounds 10 --iters 3 --out runs/pilot            (queue mode: the AG agent answers requests)
+//   node run.mjs --rounds 50 --out runs/pilot --resume            (continue the same run)
 //   node run.mjs --mock --rounds 3 --iters 2 --out runs/test       (offline test)
 import fs from 'node:fs';
 import path from 'node:path';

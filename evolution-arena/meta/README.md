@@ -30,8 +30,8 @@ Use the two workflows in `.agent/workflows/`:
 Manually:
 ```
 npm install && npx playwright install chromium
-node run.mjs --rounds 25 --iters 3 --out runs/pilot          # pilot
-node run.mjs --rounds 100 --iters 3 --out runs/pilot --resume # extend the same run to 100
+node run.mjs --rounds 10 --iters 3 --out runs/pilot          # pilot
+node run.mjs --rounds 50 --iters 3 --out runs/pilot --resume # extend the same run to 50
 node queue.mjs next | answer <id> <file>                      # answer requests
 node report.mjs runs/pilot                                    # verify + rebuild the report
 npm test                                                      # smoke tests in mock mode

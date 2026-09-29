@@ -4,8 +4,8 @@
   "type": "module",
   "description": "Meta-gauntlet: evolves the Evolution Arena playbook against a fixed benchmark.",
   "scripts": {
-    "pilot": "node run.mjs --rounds 25 --iters 3 --out runs/pilot",
-    "full": "node run.mjs --rounds 100 --iters 3 --out runs/full",
+    "pilot": "node run.mjs --rounds 10 --iters 3 --out runs/pilot",
+    "full": "node run.mjs --rounds 50 --iters 3 --out runs/pilot --resume",
     "next": "node queue.mjs next",
     "status": "node queue.mjs status",
     "report": "node report.mjs",

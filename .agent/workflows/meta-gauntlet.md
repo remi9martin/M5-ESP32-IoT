@@ -6,8 +6,8 @@ bookkeeping; your only job is to answer the model requests it queues. Never simu
 
 1. In a terminal: `cd evolution-arena/meta && npm install && npx playwright install chromium`
 2. Start the runner in its own terminal and leave it running:
-   - pilot: `node run.mjs --rounds 25 --iters 3 --out runs/pilot`
-   - continue or extend: `node run.mjs --rounds 100 --iters 3 --out runs/pilot --resume`
+   - pilot: `node run.mjs --rounds 10 --iters 3 --out runs/pilot`
+   - continue or extend: `node run.mjs --rounds 50 --iters 3 --out runs/pilot --resume`
 3. Loop until the runner prints "Done":
    a. `node queue.mjs next --except eval --out runs/pilot`
    b. If it says "No requests waiting", wait 10 seconds and repeat (grading requests belong to the judge agent).
