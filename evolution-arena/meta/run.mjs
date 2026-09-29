@@ -195,7 +195,7 @@ async function main() {
     if (OPT.budget && state.calls >= OPT.budget) { log(`Budget of ${OPT.budget} model calls reached.`); break; }
     const round = state.round + 1, tag = `r${String(round).padStart(3, '0')}`;
     log(`Round ${round}/${OPT.rounds}: asking for a playbook hypothesis`);
-    const proposal = await llm.ask({ kind: 'meta-propose', text: metaPrompt(state), schema: META_SCHEMA, temperature: 0.9,
+    const proposal = await llm.ask({ kind: 'meta-propose', text: metaPrompt(state), schema: META_SCHEMA, temperature: 0.9, tier: 'strong',
       mock: () => mockProposal(state) });
     const applied = applyEdits(state.champion.playbook, proposal.edits.slice(0, 3));
     const entry = { round, hypothesis: proposal.hypothesis, edits: proposal.edits.slice(0, 3) };

@@ -1,5 +1,5 @@
 ---
-description: Run the Evolution Arena meta-gauntlet (builder agent). Answers every model request except grading.
+description: Run the Evolution Arena meta-gauntlet (builder agent, fast model). Answers routine requests.
 ---
 You are the BUILDER for a real, code-verified self-improvement run. Code does the booting, measuring, scoring and
 bookkeeping; your only job is to answer the model requests it queues. Never simulate, summarise or invent results.
@@ -9,8 +9,8 @@ bookkeeping; your only job is to answer the model requests it queues. Never simu
    - pilot: `node run.mjs --rounds 10 --iters 3 --out runs/pilot`
    - continue or extend: `node run.mjs --rounds 50 --iters 3 --out runs/pilot --resume`
 3. Loop until the runner prints "Done":
-   a. `node queue.mjs next --except eval --out runs/pilot`
-   b. If it says "No requests waiting", wait 10 seconds and repeat (grading requests belong to the judge agent).
+   a. `node queue.mjs next --except eval --tier fast --out runs/pilot`
+   b. If it says "No requests waiting", wait 10 seconds and repeat (grading belongs to meta-judge; big decisions to meta-strong).
    c. Read the whole PROMPT. If IMAGES are listed, open and look at every image file.
    d. Write your answer as strict JSON matching ANSWER JSON SCHEMA to `runs/pilot/answer.json`.
    e. `node queue.mjs answer <ID> runs/pilot/answer.json`. If it is rejected, fix the JSON and answer again.

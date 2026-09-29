@@ -23,9 +23,11 @@ It is built to be **real and hard to fool**:
 - Evolution can tune these numbers within those limits but can never break them.
 
 ## Run it (Antigravity, no API key)
-Use the two workflows in `.agent/workflows/`:
-- `meta-gauntlet` is the builder. It starts the runner and answers requests.
-- `meta-judge` is the independent judge, run in a separate conversation.
+Use three workflows in `.agent/workflows/`, each in its own conversation:
+- `meta-gauntlet` is the builder, on a **fast** model. It starts the runner and answers routine requests.
+- `meta-strong` runs on the **strongest** model. It answers only the big decisions: each round's playbook hypothesis,
+  and arena changes for a site that is stuck (rework or leap).
+- `meta-judge` is the independent judge. It answers only grading requests.
 
 Manually:
 ```

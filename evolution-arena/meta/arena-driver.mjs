@@ -26,7 +26,9 @@ export async function runArena(browser, { llm, playbook, task, iters }) {
     await page.exposeFunction('arenaLLM', async (model, parts, schema, temperature) => {
       const text = parts.filter(p => p.text).map(p => p.text).join('\n');
       const images = parts.filter(p => p.inlineData).map(p => p.inlineData.data);
-      return JSON.stringify(await llm.ask({ kind: kindOf(schema), text, images, schema, temperature }));
+      // Escalate to the strong model when a lane is stuck (rework/leap); routine refinements stay on the fast one.
+      const tier = /MUTATION STRENGTH: (REWORK|LEAP)/.test(text) ? 'strong' : 'fast';
+      return JSON.stringify(await llm.ask({ kind: kindOf(schema), text, images, schema, temperature, tier }));
     });
   }
   await page.goto(ARENA);

@@ -52,7 +52,8 @@ export function createLLM({ mode = 'queue', dir, log = console.log, pollMs = 100
   const stats = { calls: 0, cached: 0 };
 
   // images: array of base64 JPEG strings (no data: prefix) or Buffers.
-  async function ask({ kind, text, images = [], schema, temperature = 0.3, mock }) {
+  // tier: 'fast' (routine) or 'strong' (big decisions); lets AG route requests to a cheaper or stronger model.
+  async function ask({ kind, text, images = [], schema, temperature = 0.3, mock, tier = 'fast' }) {
     const imgs = images.map(i => Buffer.isBuffer(i) ? i : Buffer.from(i, 'base64'));
     const id = sha(JSON.stringify({ kind, text, schema, temperature }) + imgs.map(b => sha(b)).join()).slice(0, 16);
     const cacheFile = path.join(cdir, id + '.json');
@@ -65,7 +66,7 @@ export function createLLM({ mode = 'queue', dir, log = console.log, pollMs = 100
     } else {
       const req = path.join(qdir, `req-${id}.json`), res = path.join(qdir, `res-${id}.json`);
       const imagePaths = imgs.map((b, i) => { const p = path.join(qdir, `img-${id}-${i}.jpg`); fs.writeFileSync(p, b); return p; });
-      if (!fs.existsSync(req)) fs.writeFileSync(req, JSON.stringify({ id, kind, temperature, schema, images: imagePaths, created: new Date().toISOString(), prompt: text }, null, 2));
+      if (!fs.existsSync(req)) fs.writeFileSync(req, JSON.stringify({ id, kind, tier, temperature, schema, images: imagePaths, created: new Date().toISOString(), prompt: text }, null, 2));
       log(`  waiting for agent: ${kind} request ${id} (queue/req-${id}.json)`);
       for (;;) {
         if (fs.existsSync(res)) {

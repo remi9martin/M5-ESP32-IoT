@@ -4,6 +4,7 @@
 //   node queue.mjs next                print the oldest request (prompt, schema, image files)
 //   node queue.mjs answer <id> <file>  validate a JSON answer and hand it to the runner ("-" = stdin)
 //   --only eval | --except eval         split the work: grading requests should go to a separate agent
+//   --tier fast | --tier strong         route routine vs big-decision requests to different models
 import fs from 'node:fs';
 import path from 'node:path';
 import { validate } from './llm.mjs';
@@ -13,7 +14,8 @@ const outIdx = args.indexOf('--out');
 const out = outIdx >= 0 ? args.splice(outIdx, 2)[1] : latestRun();
 const onlyIdx = args.indexOf('--only'), only = onlyIdx >= 0 ? args.splice(onlyIdx, 2)[1] : null;
 const exIdx = args.indexOf('--except'), except = exIdx >= 0 ? args.splice(exIdx, 2)[1] : null;
-const kindOk = f => { try { const k = JSON.parse(fs.readFileSync(f, 'utf8')).kind; return (!only || k.startsWith(only)) && (!except || !k.startsWith(except)); } catch { return false; } };
+const tierIdx = args.indexOf('--tier'), tier = tierIdx >= 0 ? args.splice(tierIdx, 2)[1] : null;
+const kindOk = f => { try { const r = JSON.parse(fs.readFileSync(f, 'utf8')), k = r.kind; return (!only || k.startsWith(only)) && (!except || !k.startsWith(except)) && (!tier || (r.tier || 'fast') === tier); } catch { return false; } };
 const qdir = path.join(out, 'queue');
 
 function latestRun() {
@@ -36,7 +38,7 @@ if (cmd === 'status' || !cmd) {
   if (!f) { console.log('No requests waiting.'); process.exit(0); }
   const r = JSON.parse(fs.readFileSync(f, 'utf8'));
   const err = path.join(qdir, `err-${r.id}.txt`);
-  console.log(`ID: ${r.id}\nKIND: ${r.kind}\nTEMPERATURE: ${r.temperature}`);
+  console.log(`ID: ${r.id}\nKIND: ${r.kind}\nTIER: ${r.tier || 'fast'}\nTEMPERATURE: ${r.temperature}`);
   if (fs.existsSync(err)) console.log('PREVIOUS ANSWER WAS REJECTED: ' + fs.readFileSync(err, 'utf8'));
   if (r.images.length) console.log('IMAGES (look at each):\n' + r.images.map(p => '  ' + p).join('\n'));
   console.log('ANSWER JSON SCHEMA:\n' + JSON.stringify(r.schema));
