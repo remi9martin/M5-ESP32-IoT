@@ -80,18 +80,20 @@ svg{width:100%;height:60px;display:block}
     <label for="model">Model (use "mock" to test offline)</label>
     <input id="model" value="gemini-2.5-flash">
     <label for="task">Task / goal</label>
-    <textarea id="task" rows="3">Build the best-looking storefront front end for a peptides brand: hero, product grid with purity/COA badges, product detail, cart drawer. Premium, clinical-clean, fast, mobile-first. Research-use-only wording; no medical or dosing claims.</textarea>
+    <textarea id="task" rows="3">Evolve this into the best peptides storefront on the web, matching or beating the top competitors (e.g. Fuse and similar premium peptide shops): complete site, clinical-luxury look, fast, mobile-first, trustworthy. Research-use-only; no dosing or medical claims.</textarea>
     <label for="judges">Judges: one persona per line (they vote)</label>
-    <textarea id="judges" rows="3">Apple's web design team and a senior front-end engineer: ruthless about typography, whitespace, polish, clarity, page weight, speed, and accessibility.</textarea>
+    <textarea id="judges" rows="3">Premium e-commerce design director (Apple/Aesop standard): typography, whitespace, polish, clarity, speed.
+Conversion and trust expert for high-end supplement/peptide storefronts: credibility, product clarity, checkout flow, mobile UX.</textarea>
     <label for="directive">Directive (prepended to every mutation)</label>
     <textarea id="directive" rows="2" placeholder="e.g. Ship small, precise changes. No unrequested features."></textarea>
     <label>Red-team gates (a critical or high finding vetoes a winning change)</label>
     <div class="chips" id="gates"></div>
     <label for="seed">Seed code (optional: paste your own HTML to evolve it)</label>
     <textarea id="seed" rows="3" placeholder="Leave empty to have each agent create its own v0"></textarea>
+    <button id="starterBtn" style="margin-top:6px">Load peptides starter</button>
     <div class="row">
       <div><label for="maxIter">Iterations</label><input id="maxIter" type="number" value="100" min="1"></div>
-      <div><label for="minChange">Min change %</label><input id="minChange" type="number" value="1" min="0"></div>
+      <div><label for="minChange">Min change % (full mode)</label><input id="minChange" type="number" value="1" min="0"></div>
       <div><label for="crossEvery">Duel every</label><input id="crossEvery" type="number" value="10" min="1"></div>
     </div>
     <div class="row">
@@ -437,8 +439,14 @@ async function evolveLane(c, id) {
     if (r.error) return reject(summary, r.error);
     cand.html = r.html;
   }
-  const ratio = changeRatio(L.code, cand.html || '');
-  if (!cand.html || ratio < c.minChange) return reject(summary, `change too small: ${(ratio * 100).toFixed(1)}%`);
+  if (!cand.html) return reject(summary, 'no code returned');
+  if (c.patch) { // small patches on big pages: judge the edit itself, not its share of the page
+    const size = patchSize(cand.edits || []);
+    if (size < 40) return reject(summary, `change too small: ${size} chars edited`);
+  } else {
+    const ratio = changeRatio(L.code, cand.html);
+    if (ratio < c.minChange) return reject(summary, `change too small: ${(ratio * 100).toFixed(1)}%`);
+  }
 
   status(id, 'Shutting down and rebooting with new code…');
   const probe = await boot(id, cand.html);
@@ -473,6 +481,15 @@ async function evolveLane(c, id) {
   }
 }
 
+// Characters actually changed by a patch (ignores text shared at the start/end of find and replace).
+function patchSize(edits) {
+  return edits.reduce((n, { find = '', replace = '' }) => {
+    let a = 0, b = 0;
+    while (a < find.length && a < replace.length && find[a] === replace[a]) a++;
+    while (b < find.length - a && b < replace.length - a && find[find.length - 1 - b] === replace[replace.length - 1 - b]) b++;
+    return n + Math.max(find.length, replace.length) - a - b;
+  }, 0);
+}
 // Patch mode: the model sends find/replace pairs; plain code applies them (first match each).
 function applyEdits(code, edits) {
   if (!edits.length) return { error: 'patch was empty' };
@@ -622,6 +639,14 @@ $('resetBtn').onclick = () => {
   S = null; try { localStorage.removeItem(KEY); } catch {}
   ['A', 'B'].forEach(id => { frame(id).srcdoc = ''; status(id, ''); });
   document.querySelectorAll('.stats,.hist,#redPanel,#auditPanel').forEach(e => e.innerHTML = ''); $('chart').innerHTML = ''; render();
+};
+$('starterBtn').onclick = async () => {
+  try {
+    const r = await fetch('seeds/peptides.html');
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    $('seed').value = await r.text();
+    log('Loaded the peptides starter as seed. Reset, then Start, so both lanes begin from it.');
+  } catch (e) { log('Could not load starter (' + e.message + '). Open the page from a server, or paste seeds/peptides.html into Seed.', 'bad'); }
 };
 $('exportBtn').onclick = () => exportSave(false);
 $('importBtn').onclick = () => { if (!running) $('importFile').click(); };
