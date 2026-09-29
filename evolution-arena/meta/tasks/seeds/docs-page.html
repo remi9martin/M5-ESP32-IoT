@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Quickstart - Quill SDK</title>
+<style>
+body{font-family:Arial,sans-serif;margin:0;color:#222;background:#fff}
+header,main,footer{padding:16px 24px}
+header{background:#eee;display:flex;justify-content:space-between;align-items:center}
+nav a{margin-left:12px;color:#06c}
+button,.btn{background:#06c;color:#fff;border:0;padding:8px 12px;cursor:pointer}
+footer{background:#eee;font-size:12px;color:#777}
+pre{background:#f4f4f4;padding:10px;overflow:auto}aside{float:left;width:180px}article{margin-left:200px}
+</style></head>
+<body>
+<header><b>Quill SDK docs</b><nav><a href="#">Guides</a><a href="#">API</a><a href="#">GitHub</a></nav></header>
+<main>
+<aside><b>Getting started</b><br><a href="#">Quickstart</a><br><a href="#">Install</a><br><a href="#">Auth</a><br><b>Guides</b><br><a href="#">Uploads</a><br><a href="#">Webhooks</a></aside>
+<article>
+<h1>Quickstart</h1>
+<p>Quill is a JavaScript SDK for storing and serving files.</p>
+<h2>1. Install</h2><pre>npm install @quill/sdk</pre>
+<h2>2. Create a client</h2><pre>import { Quill } from '@quill/sdk';
+const quill = new Quill({ projectId: 'YOUR_PROJECT_ID' });</pre>
+<h2>3. Upload a file</h2><pre>const file = await quill.upload(input.files[0]);
+console.log(file.url);</pre>
+<p>Next: read the Auth guide to restrict who can upload.</p>
+</article>
+</main>
+<footer>Quill SDK v2.3</footer>
+</body></html>

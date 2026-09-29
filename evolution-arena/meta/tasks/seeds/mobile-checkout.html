@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Checkout - Northwind Coffee</title>
+<style>
+body{font-family:Arial,sans-serif;margin:0;color:#222;background:#fff}
+header,main,footer{padding:16px 24px}
+header{background:#eee;display:flex;justify-content:space-between;align-items:center}
+nav a{margin-left:12px;color:#06c}
+button,.btn{background:#06c;color:#fff;border:0;padding:8px 12px;cursor:pointer}
+footer{background:#eee;font-size:12px;color:#777}
+input,select{display:block;width:100%;margin:4px 0 10px;padding:6px}.sum{border:1px solid #ccc;padding:10px}
+</style></head>
+<body>
+<header><b>Northwind Coffee</b><nav><a href="#">Cart</a></nav></header>
+<main>
+<h1>Checkout</h1>
+<div class="sum"><b>Order summary</b><br>Ethiopia Yirgacheffe 250g x2 - $32.00<br>Paper filters x1 - $6.00<br>Shipping - $4.50<br><b>Total - $42.50</b></div>
+<h2>Contact</h2>
+<label>Email<input type="email"></label>
+<h2>Shipping address</h2>
+<label>Full name<input></label><label>Address<input></label><label>City<input></label>
+<label>Country<select><option>United States</option><option>Canada</option></select></label>
+<h2>Payment</h2>
+<label>Card number<input inputmode="numeric"></label><label>Expiry<input placeholder="MM/YY"></label><label>CVC<input inputmode="numeric"></label>
+<button>Pay $42.50</button>
+</main>
+<footer>Secure checkout (demo)</footer>
+</body></html>

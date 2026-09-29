@@ -1,0 +1,13 @@
+{
+  "id": "docs-page",
+  "split": "holdout",
+  "seedFile": "seeds/docs-page.html",
+  "gates": [
+    "sec_priv"
+  ],
+  "task": "Turn this into a first-class developer docs quickstart for Quill SDK: sidebar navigation, readable code blocks with copy buttons, clear steps, responsive. Keep the API exactly as shown.",
+  "judges": [
+    "Premium product design director (Apple/Stripe standard): typography, spacing, hierarchy, polish.",
+    "Ordinary first-time visitor on a phone: is it instantly clear, easy and trustworthy?"
+  ]
+}
