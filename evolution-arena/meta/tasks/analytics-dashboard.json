@@ -1,0 +1,13 @@
+{
+  "id": "analytics-dashboard",
+  "split": "train",
+  "seedFile": "seeds/analytics-dashboard.html",
+  "gates": [
+    "sec_priv"
+  ],
+  "task": "Turn this into a beautiful, glanceable analytics dashboard for Metricly using the same numbers: KPI cards, a real chart of weekly traffic, top pages, responsive layout. No fake data beyond what is given.",
+  "judges": [
+    "Premium product design director (Apple/Stripe standard): typography, spacing, hierarchy, polish.",
+    "Ordinary first-time visitor on a phone: is it instantly clear, easy and trustworthy?"
+  ]
+}

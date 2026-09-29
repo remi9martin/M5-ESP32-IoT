@@ -1,0 +1,13 @@
+{
+  "id": "portfolio",
+  "split": "train",
+  "seedFile": "seeds/portfolio.html",
+  "gates": [
+    "sec_priv"
+  ],
+  "task": "Turn this into a standout personal portfolio for Maya Chen, product designer: memorable hero, case-study cards, about, contact. Do not invent employers, awards or client names.",
+  "judges": [
+    "Premium product design director (Apple/Stripe standard): typography, spacing, hierarchy, polish.",
+    "Ordinary first-time visitor on a phone: is it instantly clear, easy and trustworthy?"
+  ]
+}

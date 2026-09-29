@@ -1,0 +1,14 @@
+{
+  "id": "mobile-checkout",
+  "split": "holdout",
+  "seedFile": "seeds/mobile-checkout.html",
+  "gates": [
+    "sec_priv",
+    "legal_proc"
+  ],
+  "task": "Turn this into a frictionless, trustworthy mobile-first checkout for Northwind Coffee: clear order summary, well-labelled accessible fields, validation, obvious pay button. Keep the real items and totals.",
+  "judges": [
+    "Premium product design director (Apple/Stripe standard): typography, spacing, hierarchy, polish.",
+    "Ordinary first-time visitor on a phone: is it instantly clear, easy and trustworthy?"
+  ]
+}

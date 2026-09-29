@@ -1,0 +1,13 @@
+{
+  "id": "saas-pricing",
+  "split": "train",
+  "seedFile": "seeds/saas-pricing.html",
+  "gates": [
+    "sec_priv"
+  ],
+  "task": "Turn this into a best-in-class SaaS pricing page for Flowdesk (support ticket tool): clear plan comparison, obvious recommended plan, monthly/annual toggle, FAQ, strong but honest calls to action. Keep the real prices and features.",
+  "judges": [
+    "Premium product design director (Apple/Stripe standard): typography, spacing, hierarchy, polish.",
+    "Ordinary first-time visitor on a phone: is it instantly clear, easy and trustworthy?"
+  ]
+}

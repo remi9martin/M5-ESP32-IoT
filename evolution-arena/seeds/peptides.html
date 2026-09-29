@@ -95,10 +95,10 @@ details[open] summary::after{content:"–"}
 details p{margin-top:var(--s3);color:var(--ink-2);max-width:70ch}
 /* newsletter */
 .news{border-radius:24px;background:var(--ink);color:#fff;padding:var(--s7);display:grid;grid-template-columns:1fr 1fr;gap:var(--s5);align-items:center}
-.news form{display:flex;gap:var(--s2)}
-.news input{flex:1;height:48px;border-radius:999px;border:1px solid #2b3a3f;background:#101b1f;color:#fff;padding:0 18px}
+.news form{display:flex;gap:var(--s2);flex-wrap:wrap}
+.news input{flex:1 1 180px;min-width:0;height:48px;border-radius:999px;border:1px solid #2b3a3f;background:#101b1f;color:#fff;padding:0 18px}
 .news .btn{background:#fff;color:var(--ink);border-color:#fff}
-@media(max-width:860px){.news{grid-template-columns:1fr;padding:var(--s6)}}
+@media(max-width:860px){.news{grid-template-columns:minmax(0,1fr);padding:var(--s6)}}
 /* shop */
 .filters{display:flex;gap:var(--s3);flex-wrap:wrap;margin-bottom:var(--s5)}
 .filters input,.filters select{height:42px;border:1px solid var(--line);border-radius:999px;padding:0 16px;background:#fff}

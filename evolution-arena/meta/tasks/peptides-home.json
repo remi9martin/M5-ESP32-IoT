@@ -1,0 +1,15 @@
+{
+  "id": "peptides-home",
+  "split": "train",
+  "seedFile": "../../seeds/peptides.html",
+  "gates": [
+    "sec_priv",
+    "legal_proc",
+    "med_clin"
+  ],
+  "task": "Evolve this into the best peptides storefront on the web: complete site, clinical-luxury look, fast, mobile-first, trustworthy. Research-use-only; no dosing, medical claims, or invented credentials.",
+  "judges": [
+    "Premium product design director (Apple/Stripe standard): typography, spacing, hierarchy, polish.",
+    "Ordinary first-time visitor on a phone: is it instantly clear, easy and trustworthy?"
+  ]
+}
